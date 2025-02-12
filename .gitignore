@@ -1,0 +1,43 @@
+# Ignore auxiliary files created by LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.run.xml
+*.ist
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.pdfsync
+*.dvi
+*.ps
+*.eps
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+# Ignore backup files
+*~
+*.bak
+*.backup
+*.tmp
+
+# Ignore directories created by LaTeX editors
+.texpadtmp

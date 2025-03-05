@@ -16,7 +16,7 @@ function cfg = config()
     cfg.mapping_params.Nbps = 4;
     cfg.mapping_params.modulation = 'qam';
 
-    cfg.OSF = 4;    % oversample factor
+    cfg.OSF = 2;    % oversample factor
 
     cfg.RRC_params = struct();
     cfg.RRC_params.rolloff = 0.2;

@@ -32,3 +32,19 @@ xlabel('Sample index');
 ylabel('Amplitude');
 legend('before RRC', 'after one RRC', 'after both RRC');
 hold off;
+
+% source and demodulated signal comparison
+figure('Position', [100, 100, 800, 800]);
+stairs(signal{1}(1:N), 'LineWidth', 2);
+hold on
+stairs(signal{end}(1:N), 'r--');
+title('Comparison of Source and Demodulated Signal');
+xlabel('Bit Index');
+ylabel('Value');
+ylim([-0.5 1.75]);
+legend('Source Signal', 'Demodulated Signal');
+hold off
+
+% Calculate and display the Mean Squared Error (MSE)
+mse = mean((signal{1} - signal{end}).^2);
+disp(['Mean Squared Error (MSE): ', num2str(mse)]);

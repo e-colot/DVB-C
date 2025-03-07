@@ -6,34 +6,24 @@ function output = RRC_filtering(input, params)
 
     rc_freq = zeros(1, params.taps);
 
-    T = 1/params.bandwidth;
+    T = 1/params.symbolRate;
     lim_inf = (1-params.rolloff)/(2*T);
     lim_sup = (1+params.rolloff)/(2*T);
 
     for i = 1:params.taps
-        if (abs(freqGrid(i)) <= lim_inf)
+        if (abs(freqGrid(i)) < lim_inf)
             rc_freq(i) = T;
         elseif (abs(freqGrid(i)) <= lim_sup)
-            rc_freq(i) = T/2 * (1+cos((pi*T/params.rolloff)*(abs(freqGrid(i)-lim_inf))));
+            rc_freq(i) = T/2 * (1+cos((pi*T/params.rolloff)*(abs(freqGrid(i))-lim_inf)));
         end
     end
 
     rrc_freq = sqrt(rc_freq);
 
     rrc_freq_shifted = ifftshift(rrc_freq);
-    rrc_temp = fftshift(real(ifft(rrc_freq_shifted)));
+    rrc_temp = fftshift((ifft(rrc_freq_shifted)));
 
     rrc_temp = rrc_temp/max(rrc_temp);
-
-    % rrc_builtin = rcosdesign(params.rolloff, params.taps, params.fs/params.bandwidth, 'sqrt');
-
-    % figure;
-    % subplot(2, 1, 1);
-    % plot(rrc_temp);
-    % title('Custom RRC Filter');
-    % subplot(2, 1, 2);
-    % plot(rrc_builtin);
-    % title('MATLAB Built-in RRC Filter');
 
     % figure;
     % subplot(2, 1, 1);

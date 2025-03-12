@@ -74,8 +74,6 @@ hold off;
 
 % Calculate and display the Mean Squared Error between input and output (MSE)
 mse = mean((signal{1} - signal{end}).^2);
-disp(size(signal{1}));
-disp(size(signal{end}));
 disp(['Mean Squared Error (MSE): ', num2str(mse)]);
 
 % Show the baseband signal in the frequency domain to ensure it is bandlimited thanks to the filtering

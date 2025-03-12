@@ -20,13 +20,11 @@ for i = 1:length(blocks)
     signal{i+1} = blocks{i}(signal{i});
 end
 
-N = 200; % Number of symbols to plot
-
 figure;
-plot(real(signal{3}(1:N)));
+plot(real(signal{3}));
 hold on;
-plot(real(signal{4}(1:N)));
-plot(real(signal{5}(1:N)));
+plot(real(signal{4}));
+plot(real(signal{5}));
 title('Impact of RRC filtering on the signal');
 xlabel('Sample index');
 ylabel('Amplitude');

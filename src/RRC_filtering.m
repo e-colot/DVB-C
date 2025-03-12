@@ -26,7 +26,7 @@ function output = RRC_filtering(input, params, mode)
     rrc_freq_shifted = ifftshift(rrc_freq);
     rrc_temp = fftshift((ifft(rrc_freq_shifted)));
 
-    rrc_temp = rrc_temp/max(rrc_temp);
+    rrc_temp = rrc_temp/norm(rrc_temp);
 
     if (mode == 1)
 

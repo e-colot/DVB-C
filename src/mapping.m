@@ -77,5 +77,9 @@ switch modulation,
         
         % COMPLEX SYMBOL
         symb_tx = symb_txI + j*symb_txQ;
+
+        if (size(symb_tx,2) == 1)
+            symb_tx = symb_tx';
+        end
        
 end

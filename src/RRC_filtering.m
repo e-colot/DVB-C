@@ -1,4 +1,7 @@
-function output = RRC_filtering(input, params)
+function output = RRC_filtering(input, params, mode)
+    % mode 0: RRC for TX
+    % mode 1: RRC for RX
+    % mode 2: show filter
 
     stepOffset = params.fs/params.taps;
     highestFreq = stepOffset*(params.taps-1)/2;
@@ -25,14 +28,25 @@ function output = RRC_filtering(input, params)
 
     rrc_temp = rrc_temp/max(rrc_temp);
 
-    % figure;
-    % subplot(2, 1, 1);
-    % plot(freqGrid, rrc_freq);
-    % subplot(2, 1, 2);
-    % plot(rrc_temp);
+    if (mode == 1)
 
-    input_filtered = conv(input, rrc_temp);
+        % because at RX, the signal is convoluted with h(-t)
+        rrc_temp = fliplr(rrc_temp);
+    
+    elseif (mode == 2)
+        rc_temp = (fftshift(ifft(ifftshift(rc_freq))));
+    
+        figure;
+        subplot(2, 1, 1);
+        plot(freqGrid, rrc_freq);
+        subplot(2, 1, 2);
+        plot(rc_temp);
+    end
 
-    output = input_filtered((params.taps+1)/2:end-((params.taps-1)/2));
+    output = conv(input, rrc_temp);
+
+    if (mode == 1)
+        output = output(params.taps:end-(params.taps-1));
+    end
 
 end

@@ -27,7 +27,7 @@ if length(signal{1}) < 200
 end
 
 % source and demodulated signal comparison
-figure('Position', [100, 100, 800, 800]);
+figure('Position', [100, 100, 600, 600]);
 subplot(3,1,1);
 stairs(signal{1}(1:l), 'LineWidth', 2);
 hold on

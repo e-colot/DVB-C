@@ -1,0 +1,16 @@
+\setcounter{secnumdepth}{-1}
+
+\chapter{Step 4}
+
+\section{About the simulation}
+
+Because the simulation runs on a computer, it has to store signals on discrete time intervals. Because of the Shannon theorem, the sampling frequency (or the inverse of the time interval) has to be at least twice larger than the highest frequency of the signal. This is why the whole transmission is simulated in baseband. Working in bandpass would require much more samples to store the same signal, leading to a longer simulation time and a larger memory usage. \\
+
+The simulation sampling frequency has been chosen such that each transmitted symbol is sampled at least once. As a real communication channel is not always transmitting, each symbol is separated by some null symbols (\textit{oversampling}). $f_s$ is then equal to the symbol rate multiplied by the oversampling factor. \\
+
+{\Large Amaury : (\textit{How do you make sure you simulate the desired $E_b/N_0$ ratio?})} \\
+
+The number of transmitted packet and their length is chosen such that the simulation has enough samples to generate a reliable BER curve. If not correctly chosen, the BER would be less smooth. Even before this, the number of transmitted bits has been chosen such that every symbol is at least sent once. This allowed to validate the modulation/demodulation step. \\
+
+\section{About the communication system}
+

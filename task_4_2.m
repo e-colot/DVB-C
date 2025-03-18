@@ -42,35 +42,10 @@ plot(signal{2}, 'rx');
 title('Constellation Diagram');
 xlabel('Real Part');
 ylabel('Imaginary Part');
-legend('Signal 6', 'Signal 2');
+legend('before transmission', 'after transmission');
 hold off;
 axis equal;
 grid on;
-
-% Compare amplitude and phase of signal{2} and signal{end-1}
-figure;
-
-% Amplitude comparison
-subplot(2, 1, 1);
-plot(abs(signal{2}), 'b');
-hold on;
-plot(abs(signal{end-1}), 'r--');
-title('Amplitude Comparison');
-xlabel('Sample Index');
-ylabel('Amplitude');
-legend('Signal 2', 'Signal end-1');
-hold off;
-
-% Phase comparison
-subplot(2, 1, 2);
-plot(angle(signal{2}), 'b');
-hold on;
-plot(angle(signal{end-1}), 'r--');
-title('Phase Comparison');
-xlabel('Sample Index');
-ylabel('Phase (radians)');
-legend('Signal 2', 'Signal end-1');
-hold off;
 
 % Calculate and display the Mean Squared Error between input and output (MSE)
 mse = mean((signal{1} - signal{end}).^2);

@@ -51,6 +51,9 @@ plot(signal{2}, 'o');
 title('Constellation Diagram');
 xlabel('Real Part');
 ylabel('Imaginary Part');
+limit = max(real(signal{2})) + 1;
+xlim([-limit limit]);
+ylim([-limit limit]);
 axis equal;
 grid on;
 

@@ -38,9 +38,18 @@ function output = RRC_filtering(input, params, mode)
     
         figure;
         subplot(2, 1, 1);
-        plot(freqGrid, rrc_freq);
+        plot(freqGrid, rc_freq);
+        title('raised cosine filter frequency response');
+        xlabel('Frequency (Hz)');
+        ylabel('Magnitude');
+        grid on;
+        
         subplot(2, 1, 2);
         plot(rc_temp);
+        title('raised cosine filter impulse response');
+        xlabel('Samples');
+        ylabel('Amplitude');
+        grid on;
     end
 
     output = conv(input, rrc_temp);

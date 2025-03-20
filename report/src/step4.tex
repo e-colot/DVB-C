@@ -60,7 +60,15 @@ The time domain and frequency domain representation of the raised cosine filter 
 
 \section{Noise addition}
 
-\section{About the simulation}
+The last building block is a noise source. It generates additive white Gaussian noise in baseband. When the signal is corrupted too much, the demodulation can fail. The BER curves are plotted in figure \ref{fig:BER} and they show the impact of the noise power $N_0$ on the bit error rate. The compromise between reliability and capacity is again visible: in the same conditions (same $E_b/N_0$), a modulation with lower capacity will have a smaller BER. \\
 
+The theoretical BER curves are plotted on figure \ref{fig:BER} and are compared with the simulation results. They stay close to each other untill the BER reaches $10^{-4}$. This limit could go even lower by increasing the number of bits sent but we limited it to $10^6$ in order for the code to run quite fast. \\
 
+To impose a value of $E_b/N_0$, we start by computing the energy of the transmitted signal before adding the noise. The power of the noise is then chosen as $N_0 = E_b / (E_b/N_0)_{\text{desired}}$. \\
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{BERcurve.png}
+    \caption{BER curves for different QAM modulations}
+    \label{fig:BER}
+\end{figure}

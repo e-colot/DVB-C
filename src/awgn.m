@@ -1,7 +1,6 @@
 function output = awgn(input, params, N_0)
 
-freq_s = params.OSF*params.RRC_params.bandwidth;
-% Need to use OSF ????
+freq_s = params.OSF*params.RRC_params.symbolRate;
 
 N = length(input);
 

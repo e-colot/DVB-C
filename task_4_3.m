@@ -1,4 +1,5 @@
 cfg = config();
+
 nbps = (4:2:8);
 colors = lines(length(nbps)); % Generate distinct colors for each iteration
 
@@ -29,25 +30,7 @@ for k = 1:length(nbps)
     end
 
     %% Loop with different noise power
-
-    % Generate Noise power 
-    N_0 = zeros(1,100);
-    N_0(1)=1e-8;
-    for i =  2:length(N_0)
-        N_0(i) = N_0(i-1)/(1.25);
-    end
-
-    demapped_signal = zeros(length(N_0),cfg.NumBits);
-
-    for j = 1:length(N_0)
-        signal{5} = blocks{4}(signal{4}, N_0(j));
-        for i = 5:length(blocks)
-            signal{i+1} = blocks{i}(signal{i});
-        end
-        demapped_signal(j,:) = signal{end};
-    end
-    %%  Plots
-
+    
     % Energy per bit (Eb)
     Signal_power_baseband = sum(abs(signal{4}).^2)/length(signal{4});
     Signal_power = Signal_power_baseband/2;
@@ -56,22 +39,31 @@ for k = 1:length(nbps)
     Energy_bit = Energy_symbol/cfg.mapping_params.Nbps;
     disp(['Energy per bit (Eb): ', num2str(Energy_bit)]);
 
-    % Bit Error Rate (BER)
-    Difference_bit = zeros(length(N_0), cfg.NumBits);
+    % Generate Noise power 
+    EbN0 = linspace(cfg.EbN0_interval(1), cfg.EbN0_interval(2), cfg.BER_resolution);
+    N_0 = Energy_bit./(10.^(EbN0/10));
+
     BER = zeros(length(N_0),1);
-    theoricalBER = zeros(length(N_0),1);
-    for i=1:length(N_0)
-        errors = sum(abs(demapped_signal(i,:) - signal{1}) > 0);
-        BER(i) = errors/cfg.NumBits;
-        theoricalBER(i) = berawgn(10*log10(Energy_bit/N_0(i)), 'qam', 2^nbps(k));
+    theoreticalBER = zeros(length(N_0),1);
+
+    for j = 1:length(N_0)
+        signal{5} = blocks{4}(signal{4}, N_0(j));
+        for i = 5:length(blocks)
+            signal{i+1} = blocks{i}(signal{i});
+        end
+        errors = sum(abs(signal{end} - signal{1}) > 0);
+        BER(j) = errors/cfg.NumBits;
+        theoreticalBER(j) = berawgn(10*log10(Energy_bit/N_0(j)), 'qam', 2^nbps(k));
     end
+
+    %%  Plots
 
     % Eb/No
     Energy_per_noise =10*log10(Energy_bit./N_0);
 
     semilogy(Energy_per_noise, BER, "LineWidth", 2, 'Color', colors(k,:));
     hold on;
-    semilogy(Energy_per_noise, theoricalBER, "LineWidth", 2, "LineStyle", "--", 'Color', colors(k,:));
+    semilogy(Energy_per_noise, theoreticalBER, "LineWidth", 2, "LineStyle", "--", 'Color', colors(k,:));
     hold on;
 end
 
@@ -81,6 +73,6 @@ ylabel('BER');
 legend_entries = arrayfun(@(x) ['QAM-', num2str(2^x)], nbps, 'UniformOutput', false);
 legend_entries = [legend_entries; strcat(legend_entries, ' Theoretical')];
 legend(legend_entries(:));
-xlim([-5 25]);
-ylim([1e-6 1]);
+xlim(cfg.EbN0_interval);
+ylim([1e-5 1]);
 grid on;

@@ -38,7 +38,7 @@ First, it is important to remind that the transmitted signal is characterised / 
  Once transmitted, the signal is affected by noise (in our case AWGN noise).  In the general case, this noise reoriante the signal representation outside of the sub-space set during the modulation phase.
 To construct an optimal demodulator, 2 criteria should be taken into account.  The first one is the sufficient statistic criteria.  It is proven that once the received signal
 is projected on the sub-space defined by the previous basis functions, the noise component outside of the sub-space is indepedent from the projected signal.
-It means that we loose no information by projecting the received signal on the original sub-space and we can therefore make an optimal decision based on projected signal.
+It means that we loose no information by projecting the received signal on the original sub-space and we can therefore make an optimal decision based on the projected signal.
 (based on the coefficient of the projected received signal).
 
 \begin{figure}[H]
@@ -55,10 +55,10 @@ It means that we loose no information by projecting the received signal on the o
     \label{fig:Sufficientstatistic}
 \end{figure}
 
-The second criteria is the usage of matched filters. The demodulator used to achieve the sufficient statistic property is composed of bank of correlators (projection of basis function).
+The second criteria is the usage of matched filters. The demodulator used to achieve the sufficient statistic property is composed of bank of correlators (projection on basis function).
 Instead of using a bank of correlator, we can use a bank of filters matched to the used basis functions.  It is proven that such filters at the demodulator results to
  a maximized SNR (minimize the power of the noise at the exit of the demodulator).
-In conclusion, by using a bank of filters matched on the orthonormal basis function set by the choice of the modulation, we cna construct a optimal demodulator which
+In conclusion, by using a bank of filters matched on the orthonormal basis function set by the choice of the modulation, we can construct a optimal demodulator which
  would ensure an optimal decision based on the received signal and ensure a maximum SNR at the output of this demodulator.
 
  \begin{figure}[H]
@@ -136,7 +136,7 @@ Considering the following characteristics :
 We can derive the symbol rate from the physical bandwidth
 
 \begin{equation*}
-    f_{symbol} = \frac{B_{physical}}{roll-off-factor} = 5 MHz
+    f_{symbol} = \frac{B_{physical}}{1+roll-off-factor} = 5 MHz
 \end{equation*}
 
 \begin{equation*}

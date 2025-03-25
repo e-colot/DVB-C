@@ -31,6 +31,56 @@ Figure \ref{fig:QAMComparison} compares the modulation the constellation diagram
     \label{fig:QAMComparison}
 \end{figure}
 
+\section{Optimal demodulator and detector}
+
+First, it is important to remind that the transmitted signal is characterised / represented by a set of coefficients which results from the projection
+ of the signal on the adequate orthonormal basis function related to the choosen modulation.
+ Once transmitted, the signal is affected by noise (in our case AWGN noise).  In the general case, this noise reoriante the signal representation outside of the sub-space set during the modulation phase.
+To construct an optimal demodulator, 2 criteria should be taken into account.  The first one is the sufficient statistic criteria.  It is proven that once the received signal
+is projected on the sub-space defined by the previous basis functions, the noise component outside of the sub-space is indepedent from the projected signal.
+It means that we loose no information by projecting the received signal on the original sub-space and we can therefore make an optimal decision based on projected signal.
+(based on the coefficient of the projected received signal).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{Bank_correlator.png}
+    \caption{Projection on basis sub-space}
+    \label{fig:Bank_correlator}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{SufficientStatistic.png}
+    \caption{Criteria of sufficient statistics}
+    \label{fig:Sufficientstatistic}
+\end{figure}
+
+The second criteria is the usage of matched filters. The demodulator used to achieve the sufficient statistic property is composed of bank of correlators (projection of basis function).
+Instead of using a bank of correlator, we can use a bank of filters matched to the used basis functions.  It is proven that such filters at the demodulator results to
+ a maximized SNR (minimize the power of the noise at the exit of the demodulator).
+In conclusion, by using a bank of filters matched on the orthonormal basis function set by the choice of the modulation, we cna construct a optimal demodulator which
+ would ensure an optimal decision based on the received signal and ensure a maximum SNR at the output of this demodulator.
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Matchedfilters.png}
+    \caption{Bank of filters matching basis functions}
+    \label{fig:Matchedfilters}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{MaxSNR.png}
+    \caption{Maximum SNR demonstration}
+    \label{fig:MaxSNR}
+\end{figure}
+
+At the output of the demodulator, we still need to ensure to make the optimal choice of the M possible sm(t) based on the received signal.
+For that, we would need to follow the maximum likelihood criteria which "decoule" from the maximum a posteriori criteria (general criteria) if each possible sm(t) 
+owns the same probability.
+The criteria leads to the following result : the optimizal sm(t) choice is found by taking the minimum euclidian distance between the observable received signal r(t) 
+and all the possible modulated signal sm(t).
+
 \section{Pulse shaping}
 
 With modulation only, the bandwidth of the transmitted signal is infinite. This is problematic as it could interfere with neighboring channels. A filtering is applied to resolve this but the chosen filter must respect two other constraints: it must cancel inter-symbol interference (ISI) and must maximize the SNR. \\
@@ -72,3 +122,24 @@ To impose a value of $E_b/N_0$, we start by computing the energy of the transmit
     \caption{BER curves for different QAM modulations}
     \label{fig:BER}
 \end{figure}
+
+\section{Bit rate}
+
+Considering the following characteristics :
+
+    \begin{itemize}
+        \item (a) Physical bandwidth of 6 MHz
+        \item (b) Roll-off factor = 0.2 
+        \item (c) QAM 16 modulation 
+    \end{itemize}
+
+We can derive the symbol rate from the physical bandwidth
+
+\begin{equation*}
+    f_{symbol} = \frac{B_{physical}}{roll-off-factor} = 5 MHz
+\end{equation*}
+
+\begin{equation*}
+    Bit-rate = Symbol-rate * Bits-per-symbol = 5MHz*4 = 20 MBps
+\end{equation*}
+

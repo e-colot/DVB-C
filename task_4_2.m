@@ -51,12 +51,12 @@ grid on;
 mse = mean((signal{1} - signal{end}).^2);
 disp(['Mean Squared Error (MSE): ', num2str(mse)]);
 
-% Show the baseband signal in the frequency domain to ensure it is bandlimited thanks to the filtering
+% Show the baseband signal in the frequency domain to ensure it is bandlimited after filtering
 figure;
-basebandSignalFreq = fftshift(fft(signal{4}));
-freqaxis = linspace(-cfg.RRC_params.fs/2, cfg.RRC_params.fs/2, length(basebandSignalFreq)) / 1e6; % Convert to MHz
-plot(freqaxis, 20*log10(abs(basebandSignalFreq)));
-title('Magnitude of Baseband Signal in Frequency Domain');
+signalPSD = fftshift(pwelch(signal{4}));
+freqAxis = linspace(-cfg.RRC_params.fs/2, cfg.RRC_params.fs/2, length(signalPSD)) / 1e6; % Convert to MHz
+plot(freqAxis, db(signalPSD));
+title('PSD of the signal sent (between TX and RX)');
 xlabel('Frequency (MHz)');
 ylabel('Magnitude (dB)');
 hold on;

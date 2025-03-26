@@ -89,7 +89,7 @@ and all the possible modulated signal $s_m(t)$.
 
 With modulation only, the bandwidth of the transmitted signal is infinite. This is problematic as it could interfere with neighboring channels. A filtering is applied to resolve this but the chosen filter must respect two other constraints: it must cancel inter-symbol interference (ISI) and must maximize the SNR. \\
 The raised cosine filter is chosen as it limits the bandwidth and cancels ISI. To maximize the SNR, it is applied as a matched filter by using the square root of it at the transmitter and at the receiver. \\
-The time domain and frequency domain representation of the raised cosine filter is shown in Figure \ref{fig:raisedCosine}. Figure \ref{fig:pulseShaping} shows how the signal is shaped in the time domain and how there is indeed no ISI. Finally, the spectrum of the transmitted signal is plotted in figure \ref{fig:shapedSpectrum} where the frequency band is limited to $[-3, 3]$MHz. \\
+The time domain and frequency domain representation of the raised cosine filter is shown in Figure \ref{fig:raisedCosine}. Figure \ref{fig:pulseShaping} shows how the signal is shaped in the time domain and how there is indeed no ISI. Finally, the power spectral density \footnote{PSD as the signal is a random variable} of the transmitted signal is plotted in figure \ref{fig:psd} where the frequency band is limited to $[-3, 3]$MHz. \\
 
 \begin{figure}[H]
     \centering
@@ -107,9 +107,9 @@ The time domain and frequency domain representation of the raised cosine filter 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{shapedSpectrum.png}
-    \caption{Spectrum of the transmitted signal after pulse shaping}
-    \label{fig:shapedSpectrum}
+    \includegraphics[width=0.9\linewidth]{PSD.png}
+    \caption{PSD of the transmitted signal after pulse shaping}
+    \label{fig:psd}
 \end{figure}
 
 \section{Noise addition}

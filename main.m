@@ -21,6 +21,24 @@ for i = 1:length(blocks)
     signal{i+1} = blocks{i}(signal{i});
 end
 
-% Calculate and display the Mean Squared Error between input and output (MSE)
-mse = mean((signal{1} - signal{end}).^2);
-disp(['Mean Squared Error (MSE): ', num2str(mse)]);
+figure;
+
+subplot(1, 2, 1);
+plot(real(signal{2}), imag(signal{2}), 'o');
+title('Constellation Diagram of the clear signal');
+xlabel('In-Phase');
+ylabel('Quadrature');
+axis equal;
+xlim([-1.5 1.5]);
+ylim([-1.5 1.5]);
+grid on;
+
+subplot(1, 2, 2);
+plot(real(signal{7}), imag(signal{7}), 'o');
+title('Constellation Diagram of the noised signal');
+xlabel('In-Phase');
+ylabel('Quadrature');
+axis equal;
+xlim([-1.5 1.5]);
+ylim([-1.5 1.5]);
+grid on;

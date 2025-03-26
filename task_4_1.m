@@ -28,7 +28,7 @@ end
 
 % source and demodulated signal comparison
 figure('Position', [100, 100, 600, 600]);
-subplot(3,1,1);
+subplot(2,1,1);
 stairs(signal{1}(1:l), 'LineWidth', 2);
 hold on
 stairs(signal{3}(1:l), 'r--');
@@ -39,14 +39,8 @@ ylim([-0.5 1.75]);
 legend('Source Signal', 'Demodulated Signal');
 hold off
 
-% mean square error
-mse = norm(signal{1} - signal{3})^2 / length(signal{1});
-subplot(3,1,2);
-text(0.5, 0.5, ['Mean Square Error: ', num2str(mse)], 'HorizontalAlignment', 'center', 'FontSize', 12);
-axis off;
-
 % constellation diagram
-subplot(3,1,3);
+subplot(2,1,2);
 plot(signal{2}, 'o');
 title('Constellation Diagram');
 xlabel('Real Part');

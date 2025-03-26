@@ -10,7 +10,7 @@ Because the signal is oversampled, the sampling frequency is then equal to the s
 \section{Modulation and Demodulation}
 
 After generating N random bits, they are modulated. This allows to send fewer symbols than the number of bits. We chose QAM modulation as it combines ASK and PSK. Depending on the number of bits per symbol ($N_{\text{bps}}$), the number of bits sent ($N$) had to be chosen such that  $N / N_{\text{bps}} \in \mathbb{N}$. \\
-Figure \ref{fig:QAMComparison} compares the modulation the constellation diagrams obtained for QAM-16 and QAM-64. As the constellations points are more spaced on the left, QAM-16 is less prone to a wrong demodulation (when noise will be added). This comes at the cost of a lower bitrate: for the same symbol rate, QAM-64 will send 6 bits while QAM-16 only send 4. It clearly shows a compromise between reliability and capacity. \\
+Figure \ref{fig:QAMComparison} compares the constellation diagrams obtained for QAM-16 and QAM-64. As the constellations points are more spaced on the left, QAM-16 is less prone to a wrong demodulation (when noise will be added). This comes at the cost of a lower bitrate: for the same symbol rate, QAM-64 will send 6 bits while QAM-16 only send 4. It clearly shows a compromise between reliability and capacity. \\
 
 \begin{figure}[H]
     \centering
@@ -33,13 +33,18 @@ Figure \ref{fig:QAMComparison} compares the modulation the constellation diagram
 
 \section{Optimal demodulator and detector}
 
-First, it is important to remind that the transmitted signal is characterised / represented by a set of coefficients which results from the projection
- of the signal on the adequate orthonormal basis function related to the choosen modulation.
- Once transmitted, the signal is affected by noise (in our case AWGN noise).  In the general case, this noise reoriante the signal representation outside of the sub-space set during the modulation phase.
+First, it is important to remind that the transmitted signal is represented by a set of coefficients which results from the projection of the signal on an orthonormal basis related to the chosen modulation. Once transmitted, the signal is affected by noise (AWG noise here). In the general case, this noise moves the signal, resulting in a change in its coefficient in the basis, as can be seen on Figure \ref{fig:noise_effect}\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{noiseEffect.png}
+    \caption{Effect of noise on the constellation diagram}
+    \label{fig:noise_effect}
+\end{figure}
+
 To construct an optimal demodulator, 2 criteria should be taken into account.  The first one is the sufficient statistic criteria.  It is proven that once the received signal
-is projected on the sub-space defined by the previous basis functions, the noise component outside of the sub-space is indepedent from the projected signal.
-It means that we loose no information by projecting the received signal on the original sub-space and we can therefore make an optimal decision based on the projected signal.
-(based on the coefficient of the projected received signal).
+is projected on the sub-space defined by the previous basis functions, the noise component outside of the sub-space is independent from the projected signal.
+It means that there is no information loss when projecting the received signal on the original sub-space and the optimal decision can therefore be made using the projection of the incoming signal.
 
 \begin{figure}[H]
     \centering
@@ -55,11 +60,11 @@ It means that we loose no information by projecting the received signal on the o
     \label{fig:Sufficientstatistic}
 \end{figure}
 
-The second criteria is the usage of matched filters. The demodulator used to achieve the sufficient statistic property is composed of bank of correlators (projection on basis function).
-Instead of using a bank of correlator, we can use a bank of filters matched to the used basis functions.  It is proven that such filters at the demodulator results to
- a maximized SNR (minimize the power of the noise at the exit of the demodulator).
+The second criteria is the usage of matched filters. The demodulator used to achieve the sufficient statistic property is composed of a bank of correlators (projection on a basis function).
+Instead of using a bank of correlators, we can use a bank of filters matched to the basis functions of the chosen modulation. It is proven that such filters at the demodulator gives
+ a maximized SNR (minimize the power of the noise at the exit of the demodulator).\\
 In conclusion, by using a bank of filters matched on the orthonormal basis function set by the choice of the modulation, we can construct a optimal demodulator which
- would ensure an optimal decision based on the received signal and ensure a maximum SNR at the output of this demodulator.
+will ensure an optimal decision based on the received signal and ensure a maximum SNR at the output of this demodulator.
 
  \begin{figure}[H]
     \centering
@@ -75,11 +80,10 @@ In conclusion, by using a bank of filters matched on the orthonormal basis funct
     \label{fig:MaxSNR}
 \end{figure}
 
-At the output of the demodulator, we still need to ensure to make the optimal choice of the M possible sm(t) based on the received signal.
-For that, we would need to follow the maximum likelihood criteria which refers from the maximum a posteriori criteria (general criteria) if each possible sm(t) 
-owns the same probability.
-The criteria leads to the following result : the optimizal sm(t) choice is found by taking the minimum euclidian distance between the observable received signal r(t) 
-and all the possible modulated signal sm(t).
+At the output of the demodulator, we still need to make sure the optimal choice of the M possible $s_m(t)$ is made based on the received signal.
+To achieve this, the maximum likelihood criteria is used. It is equivalent to the maximum a posteriori criteria (general criteria) in the case of equiprobable symbols $s_m(t)$.
+The criteria leads to the following result : the optimizal $s_m(t)$ choice is found by taking the minimum euclidian distance between the observable received signal $r(t)$ 
+and all the possible modulated signal $s_m(t)$.
 
 \section{Pulse shaping}
 
@@ -110,7 +114,7 @@ The time domain and frequency domain representation of the raised cosine filter 
 
 \section{Noise addition}
 
-The last building block is a noise source. It generates additive white Gaussian noise in baseband. When the signal is corrupted too much, the demodulation can fail. The BER curves are plotted in figure \ref{fig:BER} and they show the impact of the noise power $N_0$ on the bit error rate. The compromise between reliability and capacity is again visible: in the same conditions (same $E_b/N_0$), a modulation with lower capacity will have a smaller BER. \\
+The last building block is a noise source. It generates additive white Gaussian noise in baseband. When the signal is too much corrupted, the demodulation can fail. The BER curves are plotted in figure \ref{fig:BER} and they show the impact of the noise power $N_0$ on the bit error rate. The compromise between reliability and capacity is again visible: in the same conditions (same $E_b/N_0$), a modulation with lower capacity will have a smaller BER. \\
 
 The theoretical BER curves are plotted on figure \ref{fig:BER} and are compared with the simulation results. They stay close to each other untill the BER reaches $10^{-4}$. This limit could go even lower by increasing the number of bits sent but we limited it to $10^6$ in order for the code to run quite fast. \\
 
@@ -128,18 +132,18 @@ To impose a value of $E_b/N_0$, we start by computing the energy of the transmit
 Considering the following characteristics :
 
     \begin{itemize}
-        \item (a) Physical bandwidth of 6 MHz
-        \item (b) Roll-off factor = 0.2 
-        \item (c) QAM 16 modulation 
+        \item (a) Physical bandwidth of $B_{\text{physical}} = 6$ MHz
+        \item (b) Roll-off factor $\beta = 0.2$ 
+        \item (c) QAM 16 modulation $\rightarrow \text{Nbps} = 4$
     \end{itemize}
 
 We can derive the symbol rate from the physical bandwidth
 
 \begin{equation*}
-    f_{symbol} = \frac{B_{physical}}{1+roll-off-factor} = 5 MHz
+    f_{\text{symbol}} = \frac{B_{\text{physical}}}{1+\beta} = 5 MHz
 \end{equation*}
 
 \begin{equation*}
-    Bit-rate = Symbol-rate * Bits-per-symbol = 5MHz*4 = 20 MBps
+    \text{Bit-rate} = f_{\text{symbol}} * \text{Nbps} = 5 \text{MHz} * 4 = 20 \text{MBps}
 \end{equation*}
 

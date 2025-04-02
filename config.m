@@ -32,5 +32,10 @@ function cfg = config()
     cfg.N_0 = 1e-10; % Noise power spectral density
     cfg.BER_resolution = 100; % Number of points to calculate BER
     cfg.EbN0_interval = [-5 20];
+    
+    cfg.fc = 600e6; % Carrier frequency
+    cfg.CFO_ratio = 10e-6;
+    cfg.SFO_ratio = 1e-5;
+    cfg.STO = 2e-2; % Sampling time offset
 
 end

@@ -6,9 +6,15 @@ function y = syncronisationError(x, cfg, mode)
 
     %% CFO
     if (mode == 0 | mode == 1)
-        t = (0:length(x)-1)/cfg.RRC_params.fs; % time vector
+        t = (0:length(x)-1)/(cfg.RRC_params.fs); % time vector
         y = y .* exp(1j*2*pi*cfg.fc*cfg.CFO_ratio*t); % CFO
     end
+    
+    if (mode == 0 | mode == -1)
+        t = (0:length(x)-1)/(cfg.RRC_params.fs); % time vector
+        y = y .* exp(-1j*2*pi*cfg.fc*cfg.CFO_ratio*t); % CFO
+    end
+
 
     %% carrier phase offset
     if (mode == 0 | mode == 2)

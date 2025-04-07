@@ -96,7 +96,7 @@ elseif mode ==1
     title('Bit Error Rate for CFO ppm');
     xlabel('Eb/N_0 (Decibel)');
     ylabel('BER');
-    legend_entries = arrayfun(@(x) ['CFO -', num2str(x*cfg.fc), ' Hz - ', num2str(x*1e6), 'ppm' ], cfg.CFO_ratio_vec, 'UniformOutput', false);
+    legend_entries = arrayfun(@(x) ['CFO - ', num2str(x*1e6), 'ppm - ' , num2str(x*cfg.fc), ' Hz'], cfg.CFO_ratio_vec, 'UniformOutput', false);
     legend_entries = [legend_entries, strcat('QAM-',num2str(2^nbps),' Theoretical')];
     legend(legend_entries(:));
     xlim(cfg.EbN0_interval);

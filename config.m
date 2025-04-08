@@ -21,7 +21,7 @@ function cfg = config()
     cfg.RRC_params = struct();
     cfg.RRC_params.rolloff = 0.2;
     cfg.RRC_params.bandwidth = 6e6;
-    cfg.RRC_params.taps = 101;
+    cfg.RRC_params.taps = 4*cfg.OSF+1;
     cfg.RRC_params.symbolRate = 5e6;
     cfg.RRC_params.fs = cfg.OSF*cfg.RRC_params.symbolRate;
 

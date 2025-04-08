@@ -26,7 +26,7 @@ ylabel('Amplitude');
 subplot(4,1,3);
 plot(rrc_fully_filtered);
 hold on;
-plot(10:10:length(rrc_fully_filtered), rrc_fully_filtered(10:10:end), 'o');
+plot(cfg.OSF:cfg.OSF:length(rrc_fully_filtered), rrc_fully_filtered(cfg.OSF:cfg.OSF:end), 'o');
 title('RC Filtered Signal');
 xlabel('Sample');
 ylabel('Amplitude');

@@ -42,7 +42,7 @@ plot(signal{2}, 'rx');
 title('Constellation Diagram');
 xlabel('Real Part');
 ylabel('Imaginary Part');
-legend('before transmission', 'after transmission');
+legend('after transmission', 'before transmission');
 hold off;
 axis equal;
 grid on;

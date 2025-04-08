@@ -1,4 +1,4 @@
-function y = syncronisationError(x, cfg, mode)
+function y = synchronisationError(x, cfg, mode)
 
     % mode = 0: everything, 1: CFO only, 2: phase only, 3: SFO only
 

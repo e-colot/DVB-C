@@ -35,9 +35,9 @@ function cfg = config()
 
     cfg.fc = 600e6;
     cfg.CFO_ratio = 0;
-    cfg.CFO_ratio_vec = linspace(1e-6, 20e-6, 5);
-    cfg.SFO_ratio = 0;
-    cfg.SFO_ratio_vec = linspace(1e-5, 20e-5, 3);
-    cfg.phase = linspace(0, 2*pi, 10);
+    cfg.CFO_ratio_vec = linspace(1e-6, 10e-6, 3);
+    cfg.STO = 3; % Sampling time offset (in samples)
+    cfg.STO_vec = 0:cfg.OSF; % Sampling time offset (in samples)
+
 
 end

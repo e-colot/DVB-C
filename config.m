@@ -16,7 +16,7 @@ function cfg = config()
     cfg.mapping_params.Nbps = 4;
     cfg.mapping_params.modulation = 'qam';
 
-    cfg.OSF = 10;    % oversample factor
+    cfg.OSF = 20;    % oversample factor
 
     cfg.RRC_params = struct();
     cfg.RRC_params.rolloff = 0.2;
@@ -37,8 +37,9 @@ function cfg = config()
     cfg.CFO_ratio = 0;
     cfg.CFO_ratio_vec = linspace(1e-6, 15e-6, 3);
     cfg.STO = 3; % Sampling time offset (in samples)
-    cfg.STO_vec = 0:cfg.OSF; % Sampling time offset (in samples)
+    cfg.STO_vec = 0:3:cfg.OSF; % Sampling time offset (in samples)
     cfg.phase = unifrnd(0, 2*pi);
+    cfg.phase_vec = linspace(0, 2*pi*4/5, 5); % Phase offset (in radians)
 
 
 end

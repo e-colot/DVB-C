@@ -1,14 +1,14 @@
 cfg = config();
 
-mode = 1; %Error type
-mode_inv = -mode;
+mode = 3; %Error type
 
-if mode == 0
+
+if mode == 1
     vector = cfg.CFO_ratio_vec;
-elseif mode == 1
-    vector = cfg.CFO_ratio_vec;
-elseif mode ==3
-    vector = cfg.SFO_ratio_vec;
+elseif mode == 2
+    vector = linspace(0, 2*pi*4/5, 5);
+elseif mode == 3
+    vector = cfg.STO_vec;
 end
 
     % To add a new block to the transmission chain, add the corresponding function in the handle function list "blocks"
@@ -19,7 +19,7 @@ end
         @(x, N_0) awgn(x, cfg, N_0), ...
         @(x) synchronisationError(x, cfg, mode), ...
         @(x) RRC_filtering(x, cfg.RRC_params, 1), ...
-        @(x) synchronisationError(x, cfg, mode_inv), ...
+        @(x) synchronisationError(x, cfg, -mode), ...
         @(x) downsample(x, cfg.OSF), ...
         @(x) demapping(x, cfg.mapping_params) ...
     };
@@ -52,10 +52,16 @@ end
     for j = 1:length(N_0)
         signal{5} = blocks{4}(signal{4}, N_0(j));
         for k = 1:length(vector)
-            cfg.CFO_ratio = cfg.CFO_ratio_vec(k);
+            if mode == 1
+                cfg.CFO_ratio = vector(k);
+            elseif mode == 2
+                cfg.phase = vector(k);
+            elseif mode == 3
+                cfg.STO = vector(k);
+            end
             % to reevaluate cfg
             blocks{5} = @(x) synchronisationError(x, cfg, mode);
-            blocks{7} = @(x) synchronisationError(x, cfg, mode_inv);
+            blocks{7} = @(x) synchronisationError(x, cfg, -mode);
             for i = 5:length(blocks)
                 signal{i+1} = blocks{i}(signal{i});
             end

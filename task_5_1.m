@@ -106,7 +106,18 @@ elseif mode ==1
     xlim(cfg.EbN0_interval);
     ylim([1e-5 1]);
     grid on;
-elseif mode ==2
+
+elseif mode == 2
+    title('Bit Error Rate for different phases');
+    xlabel('Eb/N_0 (Decibel)');
+    ylabel('BER');
+    legend_entries = arrayfun(@(x) ['Phase shift - ', num2str(round(x, 3)), ' rad'], vector, 'UniformOutput', false);
+    legend_entries = [legend_entries, strcat('QAM-',num2str(2^cfg.mapping_params.Nbps),' Theoretical')];
+    legend(legend_entries(:));
+    xlim(cfg.EbN0_interval);
+    ylim([1e-5 1]);
+    grid on;
+
     figure;
     plot(signal{end-1}, 'o');
     hold on;
@@ -114,16 +125,16 @@ elseif mode ==2
     title('Constellation Diagram');
     xlabel('Real Part');
     ylabel('Imaginary Part');
-    legend('before transmission', 'after transmission with phase offset');
+    legend('after transmission with phase offset', 'before transmission');
     hold off;
     axis equal;
     grid on;
-elseif mode ==3
+elseif mode == 3
     title('Bit Error Rate for time offset');
     xlabel('Eb/N_0 (Decibel)');
     ylabel('BER');
-    legend_entries = arrayfun(@(x) ['Time offset -', num2str(cfg.CFO_ratio)], cfg.SFO_ratio, 'UniformOutput', false);
-    legend_entries = [legend_entries; strcat(legend_entries, ' Theoretical')];
+    legend_entries = arrayfun(@(x) ['Sample offset ', num2str(x)], vector, 'UniformOutput', false);
+    legend_entries = [legend_entries; strcat('QAM-',num2str(2^cfg.mapping_params.Nbps),' Theoretical')];
     legend(legend_entries(:));
     xlim(cfg.EbN0_interval);
     ylim([1e-5 1]);

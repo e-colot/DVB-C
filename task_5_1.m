@@ -6,7 +6,7 @@ mode = 3; %Error type
 if mode == 1
     vector = cfg.CFO_ratio_vec;
 elseif mode == 2
-    vector = linspace(0, 2*pi*4/5, 5);
+    vector = linspace(0, 2*pi*7/8, 8);
 elseif mode == 3
     vector = cfg.STO_vec;
 end
@@ -49,26 +49,30 @@ end
 
     BER = zeros(length(N_0),length(vector));
 
-    for j = 1:length(N_0)
-        signal{5} = blocks{4}(signal{4}, N_0(j));
+    parfor j = 1:length(N_0)
+        local_blocks = blocks; % Create a local copy of the blocks for each worker
+        local_signal = signal; % Create a local copy of the signal for each worker
+        local_signal{5} = blocks{4}(local_signal{4}, N_0(j));
+        local_BER = zeros(1, length(vector)); % Local BER array for each worker
+        local_cfg = cfg; % Create a local copy of the configuration for each worker
         for k = 1:length(vector)
             if mode == 1
-                cfg.CFO_ratio = vector(k);
+                local_cfg.CFO_ratio = vector(k);
             elseif mode == 2
-                cfg.phase = vector(k);
+                local_cfg.phase = vector(k);
             elseif mode == 3
-                cfg.STO = vector(k);
+                local_cfg.STO = vector(k);
             end
             % to reevaluate cfg
-            blocks{5} = @(x) synchronisationError(x, cfg, mode);
-            blocks{7} = @(x) synchronisationError(x, cfg, -mode);
+            local_blocks{5} = @(x) synchronisationError(x, local_cfg, mode);
+            local_blocks{7} = @(x) synchronisationError(x, local_cfg, -mode);
             for i = 5:length(blocks)
-                signal{i+1} = blocks{i}(signal{i});
+                local_signal{i+1} = local_blocks{i}(local_signal{i});
             end
-            errors = sum(abs(signal{end} - signal{1}) > 0);
-            BER(j, k) = errors/cfg.NumBits;
+            errors = sum(abs(local_signal{end} - local_signal{1}) > 0);
+            local_BER(k) = errors/local_cfg.NumBits;
         end
-        
+        BER(j, :) = local_BER; % Assign local BER to the global BER matrix
     end
 
 
@@ -96,7 +100,7 @@ if mode == 0
     xlim(cfg.EbN0_interval);
     ylim([1e-5 1]);
     grid on;
-elseif mode ==1
+elseif mode == 1
     title('Bit Error Rate for CFO ppm');
     xlabel('Eb/N_0 (Decibel)');
     ylabel('BER');
@@ -117,24 +121,12 @@ elseif mode == 2
     xlim(cfg.EbN0_interval);
     ylim([1e-5 1]);
     grid on;
-
-    figure;
-    plot(signal{end-1}, 'o');
-    hold on;
-    plot(signal{2}, 'rx');
-    title('Constellation Diagram');
-    xlabel('Real Part');
-    ylabel('Imaginary Part');
-    legend('after transmission with phase offset', 'before transmission');
-    hold off;
-    axis equal;
-    grid on;
 elseif mode == 3
     title('Bit Error Rate for time offset');
     xlabel('Eb/N_0 (Decibel)');
     ylabel('BER');
     legend_entries = arrayfun(@(x) ['Sample offset ', num2str(x)], vector, 'UniformOutput', false);
-    legend_entries = [legend_entries; strcat('QAM-',num2str(2^cfg.mapping_params.Nbps),' Theoretical')];
+    legend_entries = [legend_entries, {strcat('QAM-', num2str(2^cfg.mapping_params.Nbps), ' Theoretical')}];
     legend(legend_entries(:));
     xlim(cfg.EbN0_interval);
     ylim([1e-5 1]);

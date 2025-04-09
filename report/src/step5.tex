@@ -47,10 +47,28 @@ The effect of the phase offset is only visible on the constellation plot (figure
     \label{fig:phaseOffsetConst}
 \end{figure}
 
+On a BER curve (figure \ref{fig:BER_PO}), the phase is not visible as from the errors originating from the phase offset are either on every symbol or on none and this is why the error does not depend anymore on $E_b/N_0$. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{BER_PO.png}
+    \caption{BER with phase offset}
+    \label{fig:BER_PO}
+\end{figure}
+
 \subsection{SFO}
 The SFO is neglected in the simulation as it would need some interpolation and more complex computations. \\
+
 \subsection{Time shift}
 The time shift is implemented by simply shifting the samples in the array with an oversampling factor that is large enough. \\
+A larger time shift will increase the BER as the samples will be taken at the wrong time. For sufficiently low values, it will still behave as a "classical" BER curve but from some point, there is just no more correlation between the measured sample and the received one and the BER tends to a $0.5$ line, as shown in figure \ref{fig:BER_TS}. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{BER_TS.png}
+    \caption{BER with time shift}
+    \label{fig:BER_TS}
+\end{figure}
 
 \section{Correction}
 

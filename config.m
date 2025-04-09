@@ -19,7 +19,7 @@ function cfg = config()
     cfg.OSF = 20;    % oversample factor
 
     cfg.RRC_params = struct();
-    cfg.RRC_params.rolloff = 0.2;
+    cfg.RRC_params.rolloff = 0.3;
     cfg.RRC_params.symbolRate = 5e6;
     cfg.RRC_params.bandwidth = cfg.RRC_params.symbolRate*(1+cfg.RRC_params.rolloff);
     cfg.RRC_params.taps = 4*cfg.OSF + 1;

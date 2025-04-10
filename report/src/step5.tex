@@ -1,0 +1,75 @@
+\setcounter{secnumdepth}{-1}
+
+\chapter{Synchronization errors}
+
+\section{Description}
+
+Because the receiver and transmitter are not at the same location, the carrier frequencies and the samplers at TX and RX will have a different phase and due to the inaccuracies of the oscillator, the frequencies will also be slightly different. \\
+This is summarized in 4 effects:
+\begin{itemize}
+    \item \textbf{Carrier frequency offset (CFO)}: The difference in the carrier frequencies at TX and RX ($=\Delta \omega$). It will add ISI as the RRC are not anymore matched and a linearly increasing phase shift will appear.
+    \item \textbf{Phase offset}: The difference between the phase of the carrier signal at TX and RX.
+    \item \textbf{Sampling frequency offset (SFO)}: The difference in the sampling frequencies at TX and RX.
+    \item \textbf{Time shift}: The difference in the timing of the samples at TX and RX.
+\end{itemize}
+
+\section{Implementation}
+
+\subsection{CFO}
+The CFO implementation is done by multiplying the signal with a complex exponential $e^{j2\pi \phi_{\text{ppm}}f_c t}$. The phase offset is added to the CFO. It is defined in ppm (part per million) where the ppm value is $\frac{\Delta\omega}{f_c} 10^{-6}$. \\
+Figure \ref{fig:CFO_BER} shows the BER curves with different CFO values. In order to have useful results, the linear phase shift is removed right after the second RRC filter. This allows to only keep the effect of ISI on the BER curve.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{CFO_ppm.png}
+    \caption{BER with different CFO values}
+    \label{fig:CFO_BER}
+\end{figure}
+
+Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. It is here plotted without any noise and with parameters that allow us to see the line phase shift of the symbols. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{constellation_CFO.png}
+    \caption{Constellation before and after CFO}
+    \label{fig:CFO_const}
+\end{figure}
+
+\subsection{Phase offset}
+The same is done for the phase offset where the exponential is simply $e^{j\phi}$ where $\phi$ is chosen once at the begining of the simulation. \\
+
+The effect of the phase offset is only visible on the constellation plot (figure \ref{fig:phaseOffsetConst}) where every point is rotated by a fixed angle (whereas CFO rotated the symbols linearly with time). \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{constellation_carrier_offset.png}
+    \caption{Constellation before and after phase offset}
+    \label{fig:phaseOffsetConst}
+\end{figure}
+
+On a BER curve (figure \ref{fig:BER_PO}), the phase is not visible as from the errors originating from the phase offset are either on every symbol or on none and this is why the error does not depend anymore on $E_b/N_0$. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{BER_PO.png}
+    \caption{BER with phase offset}
+    \label{fig:BER_PO}
+\end{figure}
+
+\subsection{SFO}
+The SFO is neglected in the simulation as it would need some interpolation and more complex computations. \\
+
+\subsection{Time shift}
+The time shift is implemented by simply shifting the samples in the array with an oversampling factor that is large enough. \\
+A larger time shift will increase the BER as the samples will be taken at the wrong time. For sufficiently low values, it will still behave as a "classical" BER curve but from some point, there is just no more correlation between the measured sample and the received one and the BER tends to a $0.5$ line, as shown in figure \ref{fig:BER_TS}. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{BER_TS.png}
+    \caption{BER with time shift}
+    \label{fig:BER_TS}
+\end{figure}
+
+\section{Correction}
+
+

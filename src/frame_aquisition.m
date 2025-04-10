@@ -1,7 +1,11 @@
-function frequency = frame_aquisition(y, cfg, mode)
+function CFOest = frame_aquisition(y, cfg, mode)
 
-    pilot = cfg.pilot;
-    %pilot = mapping(cfg.pilot, cfg.mapping_params);
+    if mode == 1
+        pilot = cfg.pilot;
+    else
+        pilot = mapping(cfg.pilot, cfg.mapping_params);
+    end
+
     N = cfg.pilot_params.N;
     k = cfg.pilot_params.k;
 
@@ -25,7 +29,13 @@ function frequency = frame_aquisition(y, cfg, mode)
         grid on;
         disp('Estimated pilot position: ');
         disp(maxIndex);
-        frequency = 0;
+        CFOest = 0;
+    else
+        % normal mode
+        K = length(diffCorr); % maximum shift value for k
+        denum = 2*pi/cfg.RRC_params.fs * (1:K);
+        
+        CFOest = -1/K * sum(angle(diffCorr)./denum); % CFO estimation
     end
 
 

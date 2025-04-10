@@ -41,5 +41,10 @@ function cfg = config()
     cfg.phase = unifrnd(0, 2*pi);
     cfg.phase_vec = linspace(0, 2*pi*4/5, 5); % Phase offset (in radians)
 
+    cfg.pilot_params = struct();
+    cfg.pilot_params.N = 100; % Number of pilot bits
+    cfg.pilot_params.k = round(cfg.pilot_params.N*0.2); % delay between windows
+    cfg.pilot = randi([0 1], 1, cfg.pilot_params.N); % Pilot bits
+
 
 end

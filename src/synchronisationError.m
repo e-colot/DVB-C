@@ -5,12 +5,12 @@ function y = synchronisationError(x, cfg, mode)
     y = x;
 
     %% CFO
-    if (mode == 0 | mode == 1)
+    if (mode == 0 | mode == 1 | mode == 4)
         t = (0:length(x)-1)/(cfg.RRC_params.fs); % time vector
         y = y .* exp(1j*2*pi*cfg.fc*cfg.CFO_ratio*t); % CFO
     end
     
-    if (mode == 0 | mode == -1)
+    if (mode == 0 | mode == -1 | mode == -4)
         t = (0:length(x)-1)/(cfg.RRC_params.fs); % time vector
         t = t + (cfg.RRC_params.taps-1)/(2 * cfg.RRC_params.fs); % correction for the number of samples
         y = y .* exp(-1j*2*pi*cfg.fc*cfg.CFO_ratio*t); % CFO
@@ -23,7 +23,7 @@ function y = synchronisationError(x, cfg, mode)
     end
 
     %% sampling time offset
-    if (mode == 0 | mode == 3)
+    if (mode == 0 | mode == 3 | mode == 4)
         y = [zeros(1, cfg.STO), y(1:end-cfg.STO)];
     end
 

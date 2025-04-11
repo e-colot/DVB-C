@@ -7,11 +7,11 @@ end
 
 cfg = config();
 
-x = randi([0 1], 1, cfg.pilot_params.N*10); % Generate random bits
+x = randi([0 1], 1, cfg.pilot_bit_length); % Generate random bits
 
-pilotPos = 0.5*cfg.pilot_params.N + round(cfg.pilot_params.N*9 * rand());
+pilotPos = 0.5*cfg.pilot_bit_length + round(cfg.pilot_bit_length*9 * rand());
 
-x(pilotPos:pilotPos+cfg.pilot_params.N-1) = cfg.pilot; % Insert pilot bits
+x(pilotPos:pilotPos+cfg.pilot_bit_length-1) = cfg.pilot; % Insert pilot bits
 
 disp('Pilot position: ');
 disp(pilotPos);

@@ -5,7 +5,7 @@ disp(['SNR is fixed at ', num2str(cfg.EbN0_interval(1)), ' dB']);
 disp(['CFO is fixed at ', num2str(cfg.CFO_ratio), ' ppm']);
 
 mode = 4; %Error type
-gardner_mode = 2; % mode of output (without visu [1], with visualisation of time offset and MSE [2] or with full visualisation [3]) 
+gardner_mode = 1; % mode of output (without visu [1], with visualisation of time offset and MSE [2] or with full visualisation [3]) 
 
 if mode == 1
     vector = cfg.CFO_ratio_vec;
@@ -64,16 +64,19 @@ end
                 cfg.phase = vector(k);
             elseif mode == 3
                 cfg.STO = round(vector(k));
+                colour = colors(k);
             elseif mode == 4
                 cfg.STO = round(vector(k));
             end
             % to reevaluate cfg
             blocks{5} = @(x) synchronisationError(x, cfg, mode);
-            blocks{8} = @(x) gardner(x, cfg, gardner_mode);
+            blocks{8} = @(x) gardner(x, cfg, gardner_mode, colour);
             for i = 5:7
                 signal{i+1} = blocks{i}(signal{i});
             end
-            if gardner_mode == 3 | gardner_mode == 2
+            if gardner_mode == 3
+                [signal{9},error_time] = blocks{8}(signal{8});
+            elseif gardner_mode == 2
                 [signal{9},error_time] = blocks{8}(signal{8});
             elseif gardner_mode == 1
                 [signal{9}] = blocks{8}(signal{8});
@@ -93,19 +96,18 @@ end
 
 
        %%  Convergence
-       if gardner_mode == 2 | gardner_mode == 3 
-           figure();
-           symbol_nbre = [0:1:(cfg.NumBits/cfg.mapping_params.Nbps)-1];
-           for k = 1:length(vector)
-               plot(symbol_nbre,error_matrix(:,k), 'LineWidth',0.5,'Color',colors(k,:));
-               hold on
-               yline(round(cfg.STO_vec(k))/cfg.RRC_params.fs,'--','LineWidth',0.5,'Color',colors(k,:)); % Convert to MHz
-               hold on
-           end
-           title('Time correction trough symbol transmission');
-           xlabel('Symbol');
-           ylabel('Time Error (s)');
-           legend_entries = arrayfun(@(x) ['Time offset -', num2str(x), ' samples'], cfg.STO_vec, 'UniformOutput', false);
-           legend_entries = [legend_entries; strcat(legend_entries, ' Target')];
-           legend(legend_entries(:));
+
+       figure();
+       symbol_nbre = [0:1:(cfg.NumBits/cfg.mapping_params.Nbps)-1];
+       for k = 1:length(vector)
+           plot(symbol_nbre,error_time, 'LineWidth',0.5,'Color',colors(k,:));
+           hold on
+           yline(round(cfg.STO_vec(k))/cfg.RRC_params.fs,'--','LineWidth',0.5,'Color',colors(k,:)); % Convert to MHz
+           hold on
        end
+       title('Time correction trough symbol transmission');
+       xlabel('Symbol');
+       ylabel('Time Error (s)');
+       legend_entries = arrayfun(@(x) ['Time offset -', num2str(x), ' samples'], cfg.STO_vec, 'UniformOutput', false);
+       legend_entries = [legend_entries; strcat(legend_entries, ' Target')];
+       legend(legend_entries(:));

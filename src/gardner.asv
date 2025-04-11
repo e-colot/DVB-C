@@ -57,18 +57,13 @@ function [output, error_time] = gardner(input, cfg, mode)
        hold on
        
        sumbol_range_delay = symbol_nbre + (error_time*cfg.RRC_params.fs/cfg.OSF)';
-       plot(sumbol_range_delay(1 : 20)+1.5, sqrt(abs(mid_points(1 : 20)).^2),"*",'Color','r');
+       plot(sumbol_range_delay(1 : 20)+1.5, sqrt(abs(mid_points(1 : 20)).^2),"*",'Color','b');
        hold on
     
        plot(sumbol_range_delay(1 : 20)+1, sqrt(abs(collect_slope(1:20)).^2), '--', 'LineWidth', 0.5, 'Color', 'g');
        hold on
     
        plot(sumbol_range_delay(1 : 20)+1, sqrt(abs(collect_slope(1:20)).^2), 'x', 'Color', 'g');
-       hold on
-
-       symbol_range_test_2 = linspace(0,20,400);
-
-       plot(symbol_range_test_2, sqrt(abs(input(1:20*cfg.OSF)).^2), 'LineWidth', 0.5, 'Color', 'b');
        hold on
     end
     

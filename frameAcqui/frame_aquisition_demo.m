@@ -7,20 +7,23 @@ end
 
 cfg = config();
 
-x = randi([0 1], 1, cfg.pilot_bit_length); % Generate random bits
+x = randi([0 1], 1, cfg.pilot_bit_length*10); % Generate random bits
+x = mapping(x, cfg.mapping_params); % Map bits to symbols
 
-pilotPos = 0.5*cfg.pilot_bit_length + round(cfg.pilot_bit_length*9 * rand());
+pilotPos = 0.5*length(x)*9 + round(length(x)*9 * rand());
+pilotPos = 100;
 
-x(pilotPos:pilotPos+cfg.pilot_bit_length-1) = cfg.pilot; % Insert pilot bits
+mappedPilot = mapping(cfg.pilot, cfg.mapping_params); % Map pilot bits to symbols
+x(pilotPos:pilotPos+length(mappedPilot)-1) = mappedPilot; % Insert pilot bits
 
 disp('Pilot position: ');
 disp(pilotPos);
 
 figure;
-plot([pilotPos pilotPos], ylim, '--', 'LineWidth', 1.5); % Plot vertical dotted red line
+plot([pilotPos pilotPos], [0 100], '--', 'LineWidth', 1.5); % Plot vertical dotted red line
 hold on;
 
 frame_aquisition(x, cfg, 1);
 
-legend('Correlation', 'True pilot position'); % Add legend
+legend('True pilot position', 'Correlation'); % Add legend
 hold off;

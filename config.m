@@ -41,4 +41,9 @@ function cfg = config()
     cfg.phase = unifrnd(0, 2*pi);
     cfg.phase_vec = linspace(0, 2*pi*4/5, 5); % Phase offset (in radians)
 
+    cfg.pilot_bit_length = 1000;
+    cfg.pilotK = 8;
+    cfg.pilot = randi([0 1], 1, cfg.pilot_bit_length); % Pilot bits
+
+
 end

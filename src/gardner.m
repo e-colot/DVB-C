@@ -38,3 +38,5 @@ function [output, error_time, collect_slope, mid_points , correction_real] = gar
     % disp(['Result ',num2str(error(end)*cfg.RRC_params.fs), ' micro seconds']);
     % disp(['Target ',num2str(cfg.STO), ' micro seconds']);
     output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+end
+

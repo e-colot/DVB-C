@@ -10,7 +10,6 @@ cfg = config();
 x = randi([0 1], 1, cfg.pilot_bit_length*10); % Generate random bits
 x = mapping(x, cfg.mapping_params); % Map bits to symbols
 
-pilotPos = 0.5*length(x)*9 + round(length(x)*9 * rand());
 pilotPos = 100;
 
 mappedPilot = mapping(cfg.pilot, cfg.mapping_params); % Map pilot bits to symbols

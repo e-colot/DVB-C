@@ -33,7 +33,7 @@ function cfg = config()
 
     % DO NOT TOUCH !!
     % used for every single BER curve
-    cfg.BER_resolution = 100; % Number of points to calculate BER
+    cfg.BER_resolution = 80; % Number of points to calculate BER
     cfg.EbN0_interval = [-5 20];
 
     cfg.fc = 600e6;
@@ -44,12 +44,12 @@ function cfg = config()
     cfg.phase = unifrnd(0, 2*pi);
     cfg.phase_vec = linspace(0, 2*pi*4/5, 5); % Phase offset (in radians)
 
-    cfg.pilot_bit_length = 1000;
-    cfg.pilotK = 8;
-    cfg.pilot = randi([0 1], 1, cfg.pilot_bit_length); % Pilot bits
+    cfg.pilot_length = 0;
+    cfg.pilotK = 0;
+    cfg.pilot = 0; % Pilot bits
 
     cfg.ToaA_params = struct();
-    cfg.ToaA_params.measurements = 10; % Number of measurements to obtain the stddev
+    cfg.ToaA_params.measurements = 250; % Number of measurements to obtain the stddev
 
 
 end

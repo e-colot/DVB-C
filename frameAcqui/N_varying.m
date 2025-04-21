@@ -51,7 +51,7 @@ for n_idx = 1:length(N_values)
             end
 
             % Perform frame acquisition
-            [TOA_values(meas), CFO_values(meas)] = frame_aquisition(signal_copy{end}, cfg, 0);
+            [CFO_values(meas), TOA_values(meas)] = frame_aquisition(signal_copy{end}, cfg, 0);
         end
 
         % Compute standard deviations

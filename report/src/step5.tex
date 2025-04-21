@@ -72,4 +72,48 @@ A larger time shift will increase the BER as the samples will be taken at the wr
 
 \section{Correction}
 
+\subsection{Frame and frequency acquisition}
 
+With the previous correction, the receiver knows when to sample but there still is some uncertainty on the frequency. The way to remove the CFO is to send in the data a known pilot and the first step is to detect when this pilot is received. This is known as frame acquisition and it is performed with the differential cross-correlator:
+
+\begin{equation*}
+    D_k[n] = \frac{1}{N-k} \sum_{l=k}^{N-1} \left(y^*[n+l]a[l]\right) \left(y^*[n+l-k]a[l-k]\right)^*
+\end{equation*}
+
+Where $a$ is the known pilot, $N$ its length and $k$ the delay between the two correlations. \\
+$D_k[n]$ is computed for every time index $n$ and for every shift $k$ until its maximum value, $K$. The estimation of the index of the start of the frame $\hat{n}$ and the estimation of the CFO $\hat{\Delta f}$ are given by:
+
+\begin{equation*}
+    \hat{n} = \text{arg} \max_n \sum_{k=1}^{K} |D_k[n]|
+\end{equation*}
+\begin{equation*}
+    \hat{\Delta f} = -\frac{1}{K} \sum_{k=1}^{K} \frac{\angle D_k[\hat{n}]}{2\pi kT}, \qquad T \text{ being the symbol duration.}
+\end{equation*}
+
+The implementation of the time of arrival estimator has been done on figure \ref{fig:TOA_demo} by placing the pilot at the 100th sample and by then plotting $\sum_{k=1}^{K} |D_k[n]|$. The peak at the 100th sample clearly indicates the time of arrival of the pilot and validates the implementation. A similar test was done for the CFO estimation but it is not shown here. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{TOA_demo.png}
+    \caption{Time of arrival estimation}
+    \label{fig:TOA_demo}
+\end{figure}
+
+The standard deviation of both estimators has been mesured on 250 runs for both a varying pilot length $N$ and a varying maximal shift $K$ for an increasing $\frac{E_b}{N_0}$ in figures \ref{fig:TOA_CFO_std_N} and \ref{fig:TOA_CFO_std_K}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{TOA_CFO_std_56m.png}
+    \caption{Standard deviation of the CFO estimator with varying pilot length}
+    \label{fig:TOA_CFO_std_N}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{TOA_CFO_std_K_56m.png}
+    \caption{Standard deviation of the CFO estimator with varying maximal shift}
+    \label{fig:TOA_CFO_std_K}
+\end{figure}
+
+As expected, a longer pilot and a larger shift will lower the uncertainty of the estimation and the same goes by for an increasing SNR. The fact that the line corresponding to $N = 10$ on figure \ref{fig:TOA_CFO_std_N} does not seem to decrease with $\frac{E_b}{N_0}$ is explained by the fact that $N$ and $K$ are too close to each other.\\
+The robustness of the frame acquisition is also tested against a varying CFO.

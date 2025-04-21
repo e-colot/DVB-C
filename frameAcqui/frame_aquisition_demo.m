@@ -7,7 +7,11 @@ end
 
 cfg = config();
 
-x = randi([0 1], 1, cfg.pilot_bit_length*10); % Generate random bits
+cfg.pilot_length = 20;
+cfg.pilotK = 8;
+cfg.pilot = randi([0 1], 1, cfg.pilot_length*cfg.mapping_params.Nbps);
+
+x = randi([0 1], 1, cfg.pilot_length*cfg.mapping_params.Nbps*10); % Generate random bits
 x = mapping(x, cfg.mapping_params); % Map bits to symbols
 
 pilotPos = 100;

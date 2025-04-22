@@ -36,6 +36,7 @@ CFO_values = (1:500)*1e-6;
 
 ToASTD = zeros(1, length(CFO_values));
 
+f = waitbar(0, 'Processing...');
 for i = 1:length(CFO_values)
     cfg.CFO_ratio = CFO_values(i);
     ToA = zeros(1, cfg.ToaA_params.measurements);
@@ -49,13 +50,14 @@ for i = 1:length(CFO_values)
         [~, TOA] = frame_aquisition(y, cfg, 0);
         ToA(j) = TOA;
     end
+
+    waitbar(i/length(CFO_values), f, 'Processing...');
     
     ToASTD(i) = std(ToA);
-    if mod(i, 10) == 0
-        disp(i);
-    end
     
 end
+
+delete(f); % Close the waitbar
 
 figure;
 plot(CFO_values*1e6, ToASTD, 'o-');
@@ -63,6 +65,12 @@ xlabel('CFO (ppm)');
 ylabel('ToA STD (samples)');
 title('ToA STD vs CFO');
 grid on;
-legend('ToA STD');
+
+windowSize = 10; % Define the window size for the sliding average
+slidingAvg = movmean(ToASTD, windowSize);
+
+hold on;
+plot(CFO_values*1e6, slidingAvg, '-r', 'LineWidth', 1.5);
+legend('ToA STD', 'Sliding Average');
 hold off;
 

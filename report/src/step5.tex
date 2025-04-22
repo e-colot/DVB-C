@@ -116,4 +116,11 @@ The standard deviation of both estimators has been mesured on 250 runs for both 
 \end{figure}
 
 As expected, a longer pilot and a larger shift will lower the uncertainty of the estimation and the same goes by for an increasing SNR. The fact that the line corresponding to $N = 10$ on figure \ref{fig:TOA_CFO_std_N} does not seem to decrease with $\frac{E_b}{N_0}$ is explained by the fact that $N$ and $K$ are too close to each other.\\
-The robustness of the frame acquisition is also tested against a varying CFO.
+The robustness of the frame acquisition is also tested against a varying CFO by measuring the standard deviation of the time of arrival estimator for a varying CFO. The results are shown in figure \ref{fig:TOA_std_CFO} and it can be seen that the CFO has no impact on the time of arrival estimator. This is because the used algorithm is a differential cross-correlator and not a classical correlator. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{toa_vs_cfo.eps}
+    \caption{Standard deviation of the ToA estimator with varying CFO}
+    \label{fig:TOA_std_CFO}
+\end{figure}

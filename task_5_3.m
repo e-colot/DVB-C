@@ -167,7 +167,7 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
                fill([symbol_nbre, fliplr(symbol_nbre)], [Uncert_high', fliplr(Uncert_low')], colors(k,:), 'FaceAlpha', 0.3, 'EdgeColor', 'none');
                hold on
                if mode == 4
-                   yline(round(cfg.STO_vec(k))/cfg.RRC_params.fs,'--','LineWidth',0.5,'Color',colors(k,:)); % Convert to MHz
+                   yline(round(cfg.STO_vec(k))/cfg.RRC_params.fs,'LineWidth',0.5,'Color',colors(k,:)); % Convert to MHz
                    hold on
                end
            end

@@ -10,7 +10,6 @@ function [output, error_time] = gardner(input, cfg, mode)
     error(1)= (cfg.OSF/2)/cfg.RRC_params.fs;
     error(2)= (cfg.OSF/2)/cfg.RRC_params.fs;
     y_corr = input;
-    k = 0.01;
     collect_y(1) = y_corr(cfg.OSF+round((error(1)*cfg.RRC_params.fs)));
 
     % Loop error
@@ -26,17 +25,25 @@ function [output, error_time] = gardner(input, cfg, mode)
         end
         real_part(ind-1) = real(med(ind-1)*(conj(collect_y(ind))-conj(collect_y(ind-1))));
         
-        correction = 2*k*real_part(ind-1)/(cfg.RRC_params.fs);
+        correction = 2*cfg.k_coef*real_part(ind-1)/(cfg.RRC_params.fs);
         error(ind+1) = error(ind) - correction;
 
     end
 
     if mode == 1
-        output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+        if round(abs(error(end))*cfg.RRC_params.fs) >= 1  
+            output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+        else
+            output = y_corr(1:end);
+        end
         output = [output , zeros(1, cfg.NumBits*cfg.OSF/cfg.mapping_params.Nbps - length(output))];
     elseif mode == 2
         error_time = error;
-        output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+        if round(abs(error(end))*cfg.RRC_params.fs) >= 1  
+            output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+        else
+            output = y_corr(1:end);
+        end
         output = [output , zeros(1, cfg.NumBits*cfg.OSF/cfg.mapping_params.Nbps - length(output))];
     elseif mode == 3
         error_time = error;
@@ -45,7 +52,11 @@ function [output, error_time] = gardner(input, cfg, mode)
         % disp(['Start delay ',num2str(error(1)*cfg.RRC_params.fs), ' micro seconds']);
         % disp(['Result ',num2str(error(end)*cfg.RRC_params.fs), ' micro seconds']);
         % disp(['Target ',num2str(cfg.STO), ' micro seconds']);
-        output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+        if round(abs(error(end))*cfg.RRC_params.fs) >= 1  
+            output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
+        else
+            output = y_corr(1:end);
+        end
         output = [output , zeros(1, cfg.NumBits*cfg.OSF/cfg.mapping_params.Nbps - length(output))];
 
        %% Time offset per symbol

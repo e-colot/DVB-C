@@ -41,17 +41,29 @@ function cfg = config()
     cfg.EbN0_interval = [4];
     cfg.CFO_ratio_vec = linspace(1e-6, 1000e-6, 3);
 
+    % DO NOT TOUCH !!
+    % used for every single BER curve
+    cfg.BER_resolution = 80; % Number of points to calculate BER
+    cfg.EbN0_interval = [-5 20];
+
     cfg.fc = 600e6;
     cfg.CFO_ratio = 15e-6;
     cfg.STO = 3; % Sampling time offset (in samples)
     cfg.STO_vec = [1,5,10,15,19]; % Sampling time offset (in samples)
     %cfg.STO_vec = [5]; % Sampling time offset (in samples)
+    cfg.STO_vec = 1:5; % Sampling time offset (in samples)
     cfg.phase = unifrnd(0, 2*pi);
     cfg.phase_vec = linspace(0, 2*pi*4/5, 5); % Phase offset (in radians)
 
-    cfg.pilot_bit_length = 1000;
-    cfg.pilotK = 8;
-    cfg.pilot = randi([0 1], 1, cfg.pilot_bit_length); % Pilot bits
+    cfg.pilot_length = 0;
+    cfg.pilotK = 0;
+    cfg.pilot = 0; % Pilot bits
+
+    cfg.ToaA_params = struct();
+    cfg.ToaA_params.measurements = 250; % Number of measurements to obtain the stddev
+
+    cfg.k_coef_vec = [0.02 0.05];
+    cfg.k_coef = 0.02;
 
     cfg.k_coef_vec = [0.02 0.05];
     cfg.k_coef = 0.02;

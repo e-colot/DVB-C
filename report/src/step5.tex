@@ -26,7 +26,7 @@ Figure \ref{fig:CFO_BER} shows the BER curves with different CFO values. In orde
     \label{fig:CFO_BER}
 \end{figure}
 
-Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. It is here plotted without any noise and with parameters that allow us to see the line phase shift of the symbols. \\
+Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. The linear increase of the phase due to CFO makes the received symbols to form circles in the constellation diagram. \\
 
 \begin{figure}[H]
     \centering
@@ -68,6 +68,15 @@ A larger time shift will increase the BER as the samples will be taken at the wr
     \includegraphics[width=0.8\textwidth]{BER_TS.png}
     \caption{BER with time shift}
     \label{fig:BER_TS}
+\end{figure}
+
+As the phase offset makes the receiver sample the signal between true symbols, the constellation at its output has points that are spread around the initial symbols, as shown in figure \ref{fig:phaseShiftConst}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{constellation_timeOffset.png}
+    \caption{Constellation diagram with a phase offset of 15\% of the symbol period}
+    \label{fig:phaseShiftConst}
 \end{figure}
 
 \subsection{Choice of $E_{b}/N_{o}$}
@@ -206,7 +215,7 @@ The implementation of the time of arrival estimator has been done on figure \ref
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{TOA_demo.png}
-    \caption{Time of arrival estimation}
+    \caption{Time of arrival estimation (N=20, K=8)}
     \label{fig:TOA_demo}
 \end{figure}
 
@@ -232,15 +241,24 @@ The robustness of the frame acquisition is also tested against a varying CFO by 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{toa_vs_cfo.eps}
-    \caption{Standard deviation of the ToA estimator with varying CFO}
+    \caption{Standard deviation of the ToA estimator with varying CFO (N=20, K=8)}
     \label{fig:TOA_std_CFO}
 \end{figure}
 
-A similar test was done for the CFO estimator and the results are shown in figure \ref{fig:CFO_std_CFO}. The CFO estimator is as robust as the time of arrival estimator as they are built together. Its estimation starts to get further away from the real CFO only for a big carrier frequency offset value. \\
+A similar test was done for the CFO estimator and the results are shown in figure \ref{fig:CFO_std_CFO}. The CFO estimator is as robust as it is based on the time of arrival estimator, which was robust to CFO. Its estimation starts to get further away from the real CFO only for unrealistic values of teh CFO. The standard deviation is pretty high, which means that a few pilots would be needed to average the estimation and have a value close to the real CFO. \\
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{cfo_vs_cfo.eps}
-    \caption{CFO estimation with varying CFO}
+    \caption{CFO estimation with varying CFO (N=20, K=8)}
     \label{fig:CFO_std_CFO}
+\end{figure}
+
+To avoid needing a lot of pilots, the same plot was done for a higher size of the pilot and a larger shift. The results are shown in figure \ref{fig:CFO_std_CFO_N}. The standard deviation is now much lower and the estimation is still not affected by the CFO. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{cfo_vs_cfo_longerPilot.eps}
+    \caption{CFO estimation with varying CFO (N=50, K=12)}
+    \label{fig:CFO_std_CFO_N}
 \end{figure}

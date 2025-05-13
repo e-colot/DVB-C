@@ -7,8 +7,8 @@ end
 
 cfg = config();
 
-K = 8;
-N = 20; 
+K = 12;
+N = 50; 
 
 Nbits = N * cfg.mapping_params.Nbps; 
 

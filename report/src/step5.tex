@@ -26,7 +26,7 @@ Figure \ref{fig:CFO_BER} shows the BER curves with different CFO values. In orde
     \label{fig:CFO_BER}
 \end{figure}
 
-Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. It is here plotted without any noise and with parameters that allow us to see the line phase shift of the symbols. \\
+Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. The linear increase of the phase due to CFO makes the received symbols to form circles in the constellation diagram. \\
 
 \begin{figure}[H]
     \centering
@@ -70,6 +70,15 @@ A larger time shift will increase the BER as the samples will be taken at the wr
     \label{fig:BER_TS}
 \end{figure}
 
+As the phase offset makes the receiver sample the signal between true symbols, the constellation at its output has points that are spread around the initial symbols, as shown in figure \ref{fig:phaseShiftConst}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{constellation_timeOffset.png}
+    \caption{Constellation diagram with a phase offset of 15\% of the symbol period}
+    \label{fig:phaseShiftConst}
+\end{figure}
+
 \subsection{Choice of $E_{b}/N_{o}$}
 Securing a SNR high enough to ensure a remaining acceptable time error after Gardner algorithm implementation
  (2 percents of the symbole rate) is a necessary condition to fulffill.\\
@@ -108,40 +117,40 @@ CFO of 2 ppm, for a SNR of 4-5dB, is to ensure to get:
 
 The main bottleneck of the synchronisation error correction is the combination of the time shift error and
  the carrier frequency error.
-This error combination leads us to find a algorithm which correct an error whithout being affected by the other error.
-Gardner algorithm is fulfilling this condition.  It allows to correct the time shift error being robust to any realistic CFO error.
-Once the time shift error is corrected, the second algoritm can be implemented and detect/estimate the frequency shift introduced by the CFO.\newline
+This error combination leads us to find a algorithm which correct one whithout being affected by the other.
+The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and it is robust to CFO.
+Once the time shift error is corrected, the second algorithm can be implemented and detect/estimate the frequency shift introduced by the CFO.\newline
 
-The results of our Matlab code for different time shifts and different weigthed coefficient \textbf{k} can be seen below.
+The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Gardner_time_error_correction.png}
-    \caption{Time error correction results from our Matlab code}
+    \includegraphics[width=1\textwidth]{Gardner_time_error_correction.png}
+    \caption{Time offset estimation over the samples with different time shifts}
     \label{fig:Gardner_time_error_correction}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Gardner_weigthed_coefficient.png}
-    \caption{Time error correction results with different weighted coefficient from our Matlab code}
+    \includegraphics[width=1\textwidth]{Gardner_weigthed_coefficient.png}
+    \caption{Time offset estimation over the samples with different weight coefficients}
     \label{fig:Gardner_weigthed_coefficient}
 \end{figure}
 
 It is also interesting to mention that the Gardner algorithm is a \textbf{continuous} error correction - which means that
-the time shift error is corrected along the symbol stream sending.\\
+the time shift error is corrected along the symbol stream sent.\\
 In the other hand, The frame synchronisation is a correction done by analyzing a \textbf{window} of symbols.
 
 \subsection{CFO robustness of the Gardner algorithm}
 
-To understand why the Gardner algorithm is robust to CFO, we would need to analyze mathematicall the algorithm.
+To understand why the Gardner algorithm is robust to CFO, we would need to analyze mathematically the algorithm:
 
 \begin{equation*}
     \epsilon_{n+1} = \epsilon_{n} - \frac{2k}{T} R[y_{\epsilon_{n}}[n-\frac{1}{2}](y_{\epsilon_{n}}^{*}[n] - y_{\epsilon_{n-1}}^{*}[n-1])]
 \end{equation*}
 
-By taking a close look to the equation, we can observe that the error is corrected by taking 2 adjacent symbols (which is why the algorithm is
-continuous). This specificity limits the effect of a phase shift as limited between 2 neighboring symbols.
+By taking a close look to the equation, one can observe that the error is corrected by taking the difference between 2 adjacent symbols (which is why the algorithm is
+continuous). This specificity limits the effect of a phase shift as this shift will be small between two adjacent symbols.
 
 \subsection{Differential cross-correlation}
 
@@ -155,7 +164,7 @@ We can observe that the CFO term is increasing with \textbf{n} resulting to a cr
 the window.
 
 Therefore, the idea behind the usage of the differential cross correlation is to remove the dependency of the phase shit with \textbf{n}.
-This idea leads to modify the equation and multiply the correlation between $y$ and $a$ with its complex conjudgate term. Indeed the exponential 
+This idea leads to modify the equation and multiply the correlation between $y$ and $a$ with its complex conjugate term. Indeed the exponential 
 terms are cancelling and remains an exponential dependent on k, the window division term.
 Therefore, by computing the differential cross correlation, the calculation will result to a peak once the preamble will match with the synchronisation
  window, function of $e^{-j\Delta wk}$ and 0 in the other cases.
@@ -166,7 +175,7 @@ The robustness of the gardner algorithm implemented in our Matlab code can be se
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{Gardner_CFO_robustness.png}
+    \includegraphics[width=1\textwidth]{Gardner_CFO_robustness.png}
     \caption{CFO robustness results from our Matlab code}
     \label{fig:Gardner_CFO_robustness}
 \end{figure}
@@ -206,7 +215,7 @@ The implementation of the time of arrival estimator has been done on figure \ref
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{TOA_demo.png}
-    \caption{Time of arrival estimation}
+    \caption{Time of arrival estimation (N=20, K=8)}
     \label{fig:TOA_demo}
 \end{figure}
 
@@ -232,6 +241,24 @@ The robustness of the frame acquisition is also tested against a varying CFO by 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{toa_vs_cfo.eps}
-    \caption{Standard deviation of the ToA estimator with varying CFO}
+    \caption{Standard deviation of the ToA estimator with varying CFO (N=20, K=8)}
     \label{fig:TOA_std_CFO}
+\end{figure}
+
+A similar test was done for the CFO estimator and the results are shown in figure \ref{fig:CFO_std_CFO}. The CFO estimator is as robust as it is based on the time of arrival estimator, which was robust to CFO. Its estimation starts to get further away from the real CFO only for unrealistic values of teh CFO. The standard deviation is pretty high, which means that a few pilots would be needed to average the estimation and have a value close to the real CFO. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{cfo_vs_cfo.eps}
+    \caption{CFO estimation with varying CFO (N=20, K=8)}
+    \label{fig:CFO_std_CFO}
+\end{figure}
+
+To avoid needing a lot of pilots, the same plot was done for a higher size of the pilot and a larger shift. The results are shown in figure \ref{fig:CFO_std_CFO_N}. The standard deviation is now much lower and the estimation is still not affected by the CFO. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{cfo_vs_cfo_longerPilot.eps}
+    \caption{CFO estimation with varying CFO (N=50, K=12)}
+    \label{fig:CFO_std_CFO_N}
 \end{figure}

@@ -4,7 +4,7 @@ cfg = config();
 
 disp(['SNR is fixed at ', num2str(cfg.EbN0_interval(1)), ' dB']);
 
-mode = 6; % Error type
+mode = 5; % Error type
 gardner_mode = 2; % mode of output (without visu [1], with visualisation of time offset and MSE [2] or with full visualisation [3]) 
 
 if mode == 1
@@ -39,13 +39,13 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
         @(x) synchronisationError(x, cfg, mode), ...
         @(x) RRC_filtering(x, cfg.RRC_params, 1), ...
         @(x) synchronisationError(x, cfg, -mode), ...
-        @(x) gardner(x, cfg, gardner_mode), ...
+        @(x) gardner2(x, cfg, gardner_mode), ...
         @(x) downsample(x, cfg), ...
         @(x) demapping(x, cfg.mapping_params) ...
     };
 
     signal = cell(1, length(blocks) + 1);
-    repetition = 120;
+    repetition = 150;
     temp_sum = 0;
     error_matrix = zeros((cfg.NumBits/cfg.mapping_params.Nbps),length(cfg.STO_vec)*repetition);
     for l = 1:repetition
@@ -88,7 +88,7 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
             % to reevaluate cfg
             blocks{5} = @(x) synchronisationError(x, cfg, mode);
             blocks{7} = @(x) synchronisationError(x, cfg, -mode);
-            blocks{8} = @(x) gardner(x, cfg, gardner_mode);
+            blocks{8} = @(x) gardner2(x, cfg, gardner_mode);
             for i = 5:7
                 signal{i+1} = blocks{i}(signal{i});
             end

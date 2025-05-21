@@ -1,5 +1,6 @@
-function [output, error_time] = gardner2(input, cfg, mode)
+function [output, delay] = gardner2(input, cfg, mode)
 
+    delay = -1;
     % Initialisation
     t = length(input);
     t_down = t/cfg.OSF;
@@ -74,6 +75,8 @@ function [output, error_time] = gardner2(input, cfg, mode)
     end
 
     if mode == 1
+        delay = round(abs(error(end))*cfg.RRC_params.fs);
+        disp(delay);
         if round(abs(error(end))*cfg.RRC_params.fs) >= 1  
             output = y_corr(round(abs(error(end))*cfg.RRC_params.fs):end);
         else

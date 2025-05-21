@@ -1,39 +1,78 @@
 clear; close all; clc;
 
-cfg = config(); 
-cfg.NumBits = 15000;
-cfg.pilot_length = 25;
-cfg.pilotK = 12;
+N_0 = 0;
 
-cfg.OSF = ; % depends on the setup
+cfg = config();
 
-%% signal creation
+K = 12;
+N = 50; 
 
-bitstream = randi([0 1], 1, cfg.NumBits); % Generate random bits
-modulatedSignal = mapping(bitstream, cfg.mapping_params); % Mapping
-signalOut = RRC_filtering(modulatedSignal, cfg.RRC_params, 0); % RRC filtering
+Nbits = N * cfg.mapping_params.Nbps; 
 
-cfg.pilot = modulatedSignal(1:cfg.pilotK);
+% signal generation
+cfg.pilot_length = N;
+cfg.pilotK = K;
+cfg.pilot = randi([0 1], 1, Nbits);
 
-%% signal processing
+cfg.NumBits = cfg.pilot_length*cfg.mapping_params.Nbps*50;
 
-signalIn = ;
+pilotPos = 100; 
+mappedPilot = mapping(cfg.pilot, cfg.mapping_params);
 
-% first pass to estimate the CFO
-afterRRC = RRC_filtering(signalIn, cfg.RRC_params, 1); % RRC filtering
-afterGardner = gardner(afterRRC, cfg, 1); % Gardner synchronisation
-[CFOest, ~] = frame_aquisition(afterGardner, cfg, 0); % Frame acquisition
+xbits = randi([0 1], 1, cfg.NumBits);
+x = mapping(xbits, cfg.mapping_params); 
+x(pilotPos:pilotPos+length(mappedPilot)-1) = mappedPilot; 
+xbits = demapping(x, cfg.mapping_params);
 
-% correct the CFO
-t = (0:length(signalIn)-1)/cfg.RRC_params.fs;
-CFOcorrected = signalIn .* exp(-1j*2*pi*CFOest*t);
-% continue the processing
-afterRRC = RRC_filtering(CFOcorrected, cfg.RRC_params, 1); % RRC filtering
-afterGardner = gardner(afterRRC, cfg, 1); % Gardner synchronisation
-downsampledSignal = downsample(afterGardner, cfg); % Downsampling
-demodulatedSignal = demapping(downsampledSignal, cfg.mapping_params); % Demapping
+cfg.CFO_ratio = 3e-6;
+cfg.STO = 3; 
+cfg.OSF = 20; 
 
-% compare the demodulated signal with the original bitstream
-BER = sum(bitstream ~= demodulatedSignal) / length(bitstream); % Bit Error Rate
-disp(['Bit Error Rate: ', num2str(BER)]);
 
+signal = cell(1, 10);
+
+% Generate random bits
+signal{1} = x;
+
+
+% To add a new block to the transmission chain, add the corresponding function in the handle function list "blocks"
+blocks = { ...
+    @(x) upsample(x, cfg.OSF), ...
+    @(x) RRC_filtering(x, cfg.RRC_params, 0), ...
+    @(x) awgn(x, cfg, N_0), ...
+    @(x) synchronisationError(x, cfg, 5), ...
+    @(x) RRC_filtering(x, cfg.RRC_params, 1), ...
+    @(x) gardner(x, cfg, 1), ...
+    @(x) downsample(x, cfg), ...
+    @(x) frame_aquisition(x, cfg, 0), ...
+    @(x) demapping(x, cfg.mapping_params) ...
+};
+
+% Run the blocks (until the frame_aquisition block)
+for i = 1:5
+    signal{i+1} = blocks{i}(signal{i});
+end
+
+[signal{7}, shift] = blocks{6}(signal{6});
+signal{8} = blocks{7}(signal{7});
+
+[CFOest, ToAest] = blocks{8}(signal{8});
+
+disp('ToA estimation:');
+disp(ToAest);
+
+disp('CFO estimation:');
+disp(CFOest/cfg.fc);
+
+% correct CFO
+%shift = 3;
+signal{5} = [signal{5}(shift:end), zeros(1, shift-1)];
+cfg.CFO_ratio = CFOest/cfg.fc;
+signal{5} = synchronisationError(signal{5}, cfg, -1);
+
+sig6 = blocks{5}(signal{5});
+sig8 = blocks{7}(sig6);
+sig9 = blocks{9}(sig8);
+
+errors = sum(abs(sig9-xbits))
+plot(abs(sig9-xbits), 'r');

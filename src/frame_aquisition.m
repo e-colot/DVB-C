@@ -1,4 +1,4 @@
-function [CFOest, ToAest] = frame_aquisition(y, cfg, mode)
+function [CFOest, AboveThr] = frame_aquisition(y, cfg, mode)
 
     pilot = mapping(cfg.pilot, cfg.mapping_params);
 
@@ -28,6 +28,10 @@ function [CFOest, ToAest] = frame_aquisition(y, cfg, mode)
 
     [maxCorr, ToAest] = max(sumDiffCorr);
 
+    threshold = 0.8 * maxCorr;
+    AboveThr = find(sumDiffCorr > threshold);
+    
+
     if mode == 1
         % debug mode
         plot(sumDiffCorr, 'r');
@@ -42,9 +46,15 @@ function [CFOest, ToAest] = frame_aquisition(y, cfg, mode)
         CFOest = 0;
     else
         % normal mode
+
         denum = 2*pi/cfg.RRC_params.symbolRate * (1:K);
-        
-        CFOest = -1/K * sum(angle(DiffCorr(:, ToAest).')./denum); % CFO estimation
+        CFO = zeros(1, length(AboveThr));
+
+        for i = 1:length(AboveThr)
+            CFO(i) = -1/K * sum(angle(DiffCorr(:, AboveThr(i)).')./denum); % CFO estimation
+        end
+
+        CFOest = mean(CFO); % average over every pilot
     end
 
 end

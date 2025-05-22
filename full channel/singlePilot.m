@@ -1,6 +1,7 @@
 clear; close all; clc;
 
-N_0 = 0;
+rng(251); % Set seed for reproducibility
+
 
 cfg = config();
 
@@ -74,5 +75,12 @@ sig6 = blocks{5}(signal{5});
 sig8 = blocks{7}(sig6);
 sig9 = blocks{9}(sig8);
 
-errors = sum(abs(sig9-xbits))
-plot(abs(sig9-xbits), 'r');
+cumulativeErrors = cumsum(abs(sig9-xbits));
+plot(cumulativeErrors, 'r');
+hold on;
+xlabel('Bit index');
+y = ylim;
+area([ToAest ToAest+Nbits], [1 1]*y(2), y(1), 'FaceColor', [0 0.4 0.8], 'FaceAlpha', 0.5, 'EdgeColor', 'none');
+
+legend('Cumulative error', 'Detected pilot');
+

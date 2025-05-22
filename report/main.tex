@@ -48,6 +48,58 @@
 \include{src/step4.tex}
 \include{src/step5.tex}
 
+\chapter{Full channel simulation}
+
+\section{Structure}
+Now that every block of the transmission channel has been built and tested separately, the full channel can be simulated. It's structure is the following:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pic/Full_channel.png}
+    \caption{Full channel structure}
+    \label{fig:full_channel}
+\end{figure}
+
+\section{Single pilot}
+The following figure shows the error between the input and the output bits of the channel and the position of the pilot:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pic/full_0.eps}
+    \caption{Error between input and output bits for a single pilot ($N=50$, $K=12$)}
+    \label{fig:full_0}
+\end{figure}
+As expected, the error is very low close at the beginning of the packet. This proves that the Gardner algorithm has successfully estimated the time offset and the CFO estimation was close to the real value. \\
+Errors start to appear after $4000$ bits due to the linearly increasing phase added by the CFO. This simple example showed the importance of having multiple pilots in a packet.
+
+\section{Multiple pilots}
+
+As shown on figure \ref{fig:CFO_std_CFO_N}, the standard deviation of the CFO estimation is lowered for a longer pilot but it still remains different from zero. This means that multiple pilots should be sent in order to have a better estimation of the CFO. \\
+This is what has been done in the following simulation. A total of $10$ pilots of $N=50$ bits have been sent in a packet of $10.000$ bits. The CFO is computed based on each pilot separately and the final estimation is the average of the individual estimations. The estimated CFO of the case in figure \ref{fig:full_1} is $3.098$ ppm for an actual value of $3$ ppm, which is quite close.\\
+Because the channel is fully simulated, awgn is present and the $E_b/N_0$ is set to $10$ dB. \\
+Once again, most of the errors are located closer to the end of the packet because the phase shift due to uncorrected CFO is linearly increasing with the bit index.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pic/full_1.eps}
+    \caption{Error between input and output bits for multiple pilots ($N=50$, $K=30$)}
+    \label{fig:full_1}
+\end{figure}
+
+For this same case, the constellation diagrams of different signals are shown in figure \ref{fig:full_2}: 
+\begin{itemize}
+    \item The one in the top left corner is the input signal. 
+    \item Below it, the output signal if no CFO compensation and no time shift corrector are applied. It is chaotic and no information can be retrieved from it.
+    \item The top right corner shows the output signal after the Gardner algorithm has been applied. The time shift is corrected but the CFO is still present. The constellation is now made of 2 circles, which already shows that the modulation used is QAM-16. Those circles are the result of the CFO (as shown previously in figure \ref{fig:CFO_const})
+    \item The bottom right corner shows the output signal after the Gardner algorithm and the CFO compensation have been applied. The points are now grouped around the initial constellation points. They are not perfectly aligned because the CFO estimation is not perfect and because of the noise added to the signal.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{pic/full_2.eps}
+    \caption{Constellation diagrams for multiple pilots ($N=50$, $K=30$)}
+    \label{fig:full_2}
+\end{figure}
+
+
 %\printglossary
 
 %\printglossary[type=\acronymtype]

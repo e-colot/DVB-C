@@ -99,6 +99,28 @@ For this same case, the constellation diagrams of different signals are shown in
     \label{fig:full_2}
 \end{figure}
 
+\chapter{Orange visit}
+
+\subsection{Describe the architecture of the HFC network and its main components. Where
+is the capacity bottleneck today?}
+
+HFC stands for Hybrid Fiber Coaxial. It means that the network is made of both fiber optic and coaxial cables. The optic fiber is used between the headend and the \textit{nodes} and the coaxial cables are used from those nodes to the individual houses. \\
+The coaxial part is the bottleneck but upgrading to fiber is very expensive and would need a cooperatin between the different operators.
+
+\subsection{What will be the evolution of the HFC network in the coming years? What are the key technologies to make this happen?}
+
+The \textit{nodes} discussed in the previous question will be shifted towards the houses and, after some time, the objective is to have a direct fiber connection from the headend to each house. This is done by splitting the light for downstream and a \textit{time division multiplexing} for upstream traffic. 
+
+\subsection{Which are the typical incidents happening on Orange's network? Explain the procedure foreseen to cope with them.}
+
+A tipical incident is a broken cable. It can happen due to civil works, weather conditions and so on. \\
+If no signal can be sent through the line, the broken segment is idenified and the exact distance at which it broke is computed using the \textit{Optical Time Domain Reflectometer} (OTDR). It computes the time it takes for a light pulse to go through the fiber and come back (bounce due to unproper termination).\\
+A technician is then sent to the location to solder the two broken fiber ends together and all of it happens in typically less than 8 hours.
+
+\subsection{Describe the main Orange's data center in numbers (storage, in/out capacity, consumed power, area, maintenance...). How does it compare to others?}
+
+Not much data was given about the data center. It consumes $1.5$ MW of power (which will increase to $3$ MW when the datacenter will be used at full capacity). The building is $3.000$ m$^2$ large and the data center moves $23$ TB of data every second. It also requires 2 technicians to be maintained. \\
+It is complicated to compare it to other data centers because the data is not public.
 
 %\printglossary
 

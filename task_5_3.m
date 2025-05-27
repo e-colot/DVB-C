@@ -2,7 +2,7 @@ clear;
 close all;
 cfg = config();
 
-disp(['SNR is fixed at ', num2str(cfg.EbN0_interval(1)), ' dB']);
+vector_SNR = -5:10;
 
 mode = 5; % Error type
 gardner_mode = 2; % mode of output (without visu [1], with visualisation of time offset and MSE [2] or with full visualisation [3]) 
@@ -12,13 +12,15 @@ if mode == 1
 elseif mode == 2
     vector = linspace(0, 2*pi*4/5, 5);
 elseif mode == 3
-    vector = cfg.STO_vec;
+    %vector = cfg.STO_vec;
+    vector = 4;
 elseif mode == 4 % multiple time offset samples tested 
     vector = cfg.STO_vec;
     disp(['CFO is fixed at ', num2str(cfg.CFO_ratio), ' ppm']);
 elseif mode == 5 % multiple CFOs tested for a same time offset
     vector = cfg.CFO_ratio_vec;
     cfg.STO = cfg.STO_vec(1);
+    cfg.STO = 4;
     disp(['STO is fixed at ', num2str(cfg.STO), ' samples shift']);
 elseif mode == 6 % multiple K coef tested for a same time offset
     vector = cfg.k_coef_vec;
@@ -29,6 +31,7 @@ elseif mode == 6 % multiple K coef tested for a same time offset
 end
 
 colors = lines(length(vector)); % Generate distinct colors for each iteration
+colors_2 = lines(length(vector_SNR));
 
     % To add a new block to the transmission chain, add the corresponding function in the handle function list "blocks"
     blocks = { ...
@@ -45,7 +48,7 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
     };
 
     signal = cell(1, length(blocks) + 1);
-    repetition = 150;
+    repetition = 1;
     temp_sum = 0;
     error_matrix = zeros((cfg.NumBits/cfg.mapping_params.Nbps),length(cfg.STO_vec)*repetition);
     for l = 1:repetition
@@ -67,14 +70,9 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
     Energy_symbol = Signal_power/cfg.RRC_params.symbolRate;
     Energy_bit = Energy_symbol/cfg.mapping_params.Nbps;
 
-    % Generate Noise power 
-    % EbN0 = linspace(cfg.EbN0_interval(1), cfg.EbN0_interval(2), cfg.BER_resolution);
-    EbN0 = cfg.EbN0_interval(1);
-    N_0 = Energy_bit./(10.^(EbN0/10));
-    
-    signal{5} = blocks{4}(signal{4}, N_0);
-
-    
+    for m = 1 : length(vector_SNR)
+        cfg.EbN0_interval(1) = vector_SNR(m);
+        %disp(['SNR is fixed at ', num2str(cfg.EbN0_interval(1)), ' dB']);
         for k = 1:length(vector)
             if mode == 1 | mode == 5
                 cfg.CFO_ratio = vector(k);
@@ -86,6 +84,11 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
                 cfg.k_coef = vector(k);
             end
             % to reevaluate cfg
+            % Generate Noise power 
+            % EbN0 = linspace(cfg.EbN0_interval(1), cfg.EbN0_interval(2), cfg.BER_resolution);
+            EbN0 = cfg.EbN0_interval(1);
+            N_0 = Energy_bit./(10.^(EbN0/10));
+            signal{5} = blocks{4}(signal{4}, N_0);
             blocks{5} = @(x) synchronisationError(x, cfg, mode);
             blocks{7} = @(x) synchronisationError(x, cfg, -mode);
             blocks{8} = @(x) gardner2(x, cfg, gardner_mode);
@@ -103,7 +106,7 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
 
             if gardner_mode == 2 | gardner_mode == 3
 
-                error_matrix(:,k+(l-1)*length(vector)) = error_time; % Filling error matrix with error time tracking for each repetition l
+                error_matrix(:,k+(m-1)*(length(vector))+(l-1)*(length(vector)*length(vector_SNR))) = error_time; % Filling error matrix with error time tracking for each repetition l
                 %% Check result
             
                 % % Calculate and display the Mean Squared Error between input and output (MSE)
@@ -116,13 +119,14 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
             end
         end
     end
+    end
 
        %% Averaging the curves
 
        Error_average = zeros((cfg.NumBits/cfg.mapping_params.Nbps),length(cfg.STO_vec));
        for  i= 1:length(vector) 
            for l = 1:repetition
-                temp_sum = temp_sum + error_matrix(:,i+length(vector)*(l-1));
+                temp_sum = temp_sum + error_matrix(:,i+(length(vector)*length(vector_SNR))*(l-1));
            end
            Error_average(:,i) = temp_sum./repetition;
            temp_sum = 0;
@@ -134,7 +138,7 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
        for i = 1:length(vector)
            Covariance{i} = zeros(length(error_time),length(error_time));
            for l = 1:repetition
-               Covariance{i} = Covariance{i} + (error_matrix(:,i+(l-1)*length(vector))-Error_average(:,i))*(error_matrix(:,i+(l-1)*length(vector))-Error_average(:,i))';
+               Covariance{i} = Covariance{i} + (error_matrix(:,i+(l-1)*(length(vector)*length(vector_SNR)))-Error_average(:,i))*(error_matrix(:,i+(l-1)*(length(vector)+length(vector_SNR)))-Error_average(:,i))';
            end
            Covariance{i} = Covariance{i}/repetition;
        end
@@ -146,6 +150,38 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
                 std{i}(l,1) = sqrt(Covariance{i}(l,l));
            end
        end
+
+       %% SNR - Time Shift accuracy relation
+       figure();
+       j=1;
+       error_display = zeros(length(vector_SNR),1);
+       symbol_nbre = 0:1:(cfg.NumBits/cfg.mapping_params.Nbps)-1;
+       reshaped_matrix = reshape(error_matrix, size(error_matrix,1), length(vector)*length(vector_SNR), []);
+       average_SNR = mean(reshaped_matrix, 3);
+       for m = 1 : length(vector_SNR)
+            plot(symbol_nbre,average_SNR(:,1+length(vector)*(m-1)),'--', 'LineWidth',0.5,'Color',colors_2(m,:));
+            error_display(j) =  average_SNR(end,1+length(vector)*(m-1));
+            j = j+1;
+            hold on;
+       end
+       xlabel('Time');
+       ylabel('Time shift');
+       yline(round(cfg.STO)/cfg.RRC_params.fs,'--','LineWidth',0.5,'Color','r');
+       title('Time shift estimation with Gardner per SNR values');
+        legend_labels = arrayfun(@(x) sprintf('SNR = %d dB', x), vector_SNR, 'UniformOutput', false);
+        legend(legend_labels);
+       Symbol_percent = abs(cfg.STO/cfg.RRC_params.fs-error_display).*cfg.RRC_params.symbolRate*100;
+
+       
+        % Create a new figure
+        figure();
+        
+        % Plot histogram with rectangular bars
+        bar(vector_SNR, Symbol_percent);
+        yline(2,'--','LineWidth',0.5,'Color','r');
+        xlabel('SNR (dB)');
+        ylabel('Time shift - fct(Symbol rate) (%)');
+        title('Ratio Time shift over Symbol rate per SNR value');
 
        %%  Convergence
        if gardner_mode == 2 | gardner_mode == 3 
@@ -193,4 +229,6 @@ colors = lines(length(vector)); % Generate distinct colors for each iteration
            end
            
            legend(legend_entries(:));
+
+
        end

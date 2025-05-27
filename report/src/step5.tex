@@ -177,7 +177,16 @@ continuous). This specificity limits the effect of a phase shift.  Indeed, multi
 a difference of terms of opposite rotation with negligibe phase impact for realistic CFO value.  Thus, leading to Gardner algorithm being robust to CFO.\newline
 It should be mentionned that the Gardner algorithm is used with an interpolation function as the time error calculated per symbol 
 may not fall accurately to a time sample bin.  Therefore, it would be wise to oversample the symbol stream judiciously to compute an 
-accurate time error after interpolation.
+accurate time error after interpolation. \\
+Figure \ref{fig:Gardner_algo_visu_PAM} shows a visualisation of the Gardner algorithm for PAM-2 modulation with midpoints, actual sampling instants,
+correct sampling instants and sampling points slope.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Gardner_algo_visu_PAM.png}
+    \caption{Gardner algorithm for PAM-2 modulation}
+    \label{fig:Gardner_algo_visu_PAM}
+\end{figure}
+
 
 \subsection{Differential cross-correlation}
 

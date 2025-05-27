@@ -139,11 +139,12 @@ CFO of 2 ppm, for a SNR of 4-5dB, is to ensure to get:
 
 The main bottleneck of the synchronisation error correction is the combination of the time shift error and
  the carrier frequency error.
-This error combination leads us to find a algorithm which correct one whithout being affected by the other.
-The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and is robust to CFO.
+This error combination leads us to model an algorithm which correct one whithout being affected by the other.
+The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and is also robust to CFO.
 Once the time shift error is corrected, the second algorithm can be implemented and detect/estimate the frequency shift introduced by the CFO.\newline
 
-The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below.
+The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below
+showing the performance of the coded algorithm inline with what was expected.
 
 \begin{figure}[H]
     \centering
@@ -186,10 +187,10 @@ Let's have a closer look to the cross correlation equation to grasp the intuitio
     \sum_{l}{y^{*}_{n+l}a_{l}} = \sum_{l}{I^{*}_{n+l}a_{l}e^{-j\phi_{o}}e^{-j\Delta w(n+l)T}}
 \end{equation*}
 
-We can observe that the CFO term is increasing with \textbf{n} resulting to a cross correlation equals to 0 even if the preamble is fitting
+We can observe that the CFO term is increasing with \textbf{l+n} resulting to a cross correlation equals to 0 even if the preamble is fitting
 the window.
 
-Therefore, the idea behind the usage of the differential cross correlation is to remove the dependency of the phase shit with \textbf{n}.
+Therefore, the idea behind the usage of the differential cross correlation is to remove the dependency of the phase shit with \textbf{l+n}.
 This idea leads to modify the equation and multiply the correlation between $y$ and $a$ with its complex conjugate term. Indeed the exponential 
 terms are cancelling and remains an exponential dependent on k, the window division term.
 Therefore, by computing the differential cross correlation, the calculation will result to a peak once the preamble will match with the synchronisation

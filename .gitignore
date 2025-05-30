@@ -42,4 +42,5 @@
 .texpadtmp
 
 .VSCodeCounter/
+.vscode/
 test.m

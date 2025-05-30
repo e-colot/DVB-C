@@ -4,7 +4,7 @@
 
 \section{Description}
 
-Because the receiver and transmitter are not at the same location, the carrier frequencies and the samplers at TX and RX will have a different phase and due to the inaccuracies of the oscillator, the frequencies will also be slightly different. \\
+Because the receiver and transmitter are not at the same location, the carrier frequencies and the samplers at TX and RX will have a different phase and due to the inaccuracies of the oscillator, the frequencies will also be slightly different. \par
 This is summarized in 4 effects:
 \begin{itemize}
     \item \textbf{Carrier frequency offset (CFO)}: The difference in the carrier frequencies at TX and RX ($=\Delta \omega$). It will add ISI as the RRC are not anymore matched and a linearly increasing phase shift will appear.
@@ -16,7 +16,7 @@ This is summarized in 4 effects:
 \section{Implementation}
 
 \subsection{CFO}
-The CFO implementation is done by multiplying the signal with a complex exponential $e^{j2\pi \phi_{\text{ppm}}f_c t}$. The phase offset is added to the CFO. It is defined in ppm (part per million) where the ppm value is $\frac{\Delta\omega}{f_c} 10^{-6}$. \\
+The CFO implementation is done by multiplying the signal with a complex exponential $e^{j2\pi \phi_{\text{ppm}}f_c t}$. The phase offset is added to the CFO. It is defined in ppm (part per million) where the ppm value is $\frac{\Delta\omega}{f_c} 10^{-6}$. \par
 Figure \ref{fig:CFO_BER} shows the BER curves with different CFO values. In order to have useful results, the linear phase shift is removed right after the second RRC filter. This allows to only keep the effect of ISI on the BER curve.
 
 \begin{figure}[H]
@@ -26,7 +26,7 @@ Figure \ref{fig:CFO_BER} shows the BER curves with different CFO values. In orde
     \label{fig:CFO_BER}
 \end{figure}
 
-Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. The linear increase of the phase due to CFO makes the received symbols to form circles in the constellation diagram. \\
+Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation for QAM-16. The linear increase of the phase due to CFO makes the received symbols to form circles in the constellation diagram. \par
 
 \begin{figure}[H]
     \centering
@@ -36,9 +36,9 @@ Figure \ref{fig:CFO_const} shows the effect of CFO on the symbol constellation f
 \end{figure}
 
 \subsection{Phase offset}
-The same is done for the phase offset where the exponential is simply $e^{j\phi}$ where $\phi$ is chosen once at the begining of the simulation. \\
+The same is done for the phase offset where the exponential is simply $e^{j\phi}$ where $\phi$ is chosen once at the beginning of the simulation. \par
 
-The effect of the phase offset is only visible on the constellation plot (figure \ref{fig:phaseOffsetConst}) where every point is rotated by a fixed angle (whereas CFO rotated the symbols linearly with time). \\
+The effect of the phase offset is only visible on the constellation plot (figure \ref{fig:phaseOffsetConst}) where every point is rotated by a fixed angle (whereas CFO rotated the symbols linearly with time). \par
 
 \begin{figure}[H]
     \centering
@@ -47,7 +47,7 @@ The effect of the phase offset is only visible on the constellation plot (figure
     \label{fig:phaseOffsetConst}
 \end{figure}
 
-On a BER curve (figure \ref{fig:BER_PO}), the phase is not visible as from the errors originating from the phase offset are either on every symbol or on none and this is why the error does not depend anymore on $E_b/N_0$. \\
+On a BER curve (figure \ref{fig:BER_PO}), the phase is not visible as from the errors originating from the phase offset are either on every symbol or on none and this is why the error does not depend anymore on $E_b/N_0$. \par
 
 \begin{figure}[H]
     \centering
@@ -57,11 +57,11 @@ On a BER curve (figure \ref{fig:BER_PO}), the phase is not visible as from the e
 \end{figure}
 
 \subsection{SFO}
-The SFO is neglected in the simulation as it would need some interpolation and more complex computations. \\
+The SFO is neglected in the simulation as it would need some interpolation and more complex computations. \par
 
 \subsection{Time shift}
-The time shift is implemented by simply shifting the samples in the array with an oversampling factor that is large enough. \\
-A larger time shift will increase the BER as the samples will be taken at the wrong time. For sufficiently low values, it will still behave as a "classical" BER curve but from some point, there is just no more correlation between the measured sample and the received one and the BER tends to a $0.5$ line, as shown in figure \ref{fig:BER_TS}. \\
+The time shift is implemented by simply shifting the samples in the array with an oversampling factor that is large enough. \par
+A larger time shift will increase the BER as the samples will be taken at the wrong time. For sufficiently low values, it will still behave as a "classical" BER curve but from some point, there is just no more correlation between the measured sample and the received one and the BER tends to a $0.5$ line, as shown in figure \ref{fig:BER_TS}. \par
 
 \begin{figure}[H]
     \centering
@@ -70,41 +70,27 @@ A larger time shift will increase the BER as the samples will be taken at the wr
     \label{fig:BER_TS}
 \end{figure}
 
-As the phase offset makes the receiver sample the signal between true symbols, the constellation at its output has points that are spread around the initial symbols, as shown in figure \ref{fig:phaseShiftConst}. 
+As the phase offset makes the receiver sample the signal between true symbols, the constellation at its output has points that are spread around the initial symbols, as shown in figure \ref{fig:phaseShiftConst}. This effect is a form of ISI as the measured samples are between two symbols and therefore suffers from interference.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{constellation_timeOffset.png}
+    \includegraphics[width=0.5\textwidth]{constellation_timeOffset.png}
     \caption{Constellation diagram with a phase offset of 15\% of the symbol period}
     \label{fig:phaseShiftConst}
 \end{figure}
 
 \subsection{Choice of $E_{b}/N_{o}$}
 Securing a SNR high enough to ensure a remaining acceptable time error after Gardner algorithm implementation
- (2 percents of the symbole rate) is a necessary condition to fulffill.\\
-The impact on the BER can be seen on the graph below - figure \ref{fig:time_shift_error_SNR}.
+ (2 percents of the symbol rate) is a necessary condition to fulfill.\par
+The impact on the BER can be seen on a previous graph - figure \ref{fig:BER_TS}.
 In our case, for a symbol rate of 5MHz, the SNR should be above 4dB - 5dB and will be used in our simulation.
-Morevover, this SNR allows us to achieve, once the frame synchronisation implemented, a remaining carrier frequency offset
-of 2 ppm which is very close from the BER performance we can get without CFO - figure \ref{fig:carrier_shift_error_SNR}.
+Moreover, this SNR allows us to achieve, once the frame synchronization implemented, a remaining carrier frequency offset
+of 2 ppm which is very close from the BER performance we can get without CFO - figure \ref{fig:CFO_BER}.
 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{time_shift_error_SNR.png}
-    \caption{Impact of time shift on bit error rate}
-    \label{fig:time_shift_error_SNR}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{carrier_shift_error_SNR.png}
-    \caption{Impact of carrier frequency offset on bit error rate}
-    \label{fig:carrier_shift_error_SNR}
-\end{figure}
 
 \subsection{Length of the pilot and the data sequence}
 
-Another condition to successfully implement the frame synchronisation algorithm and secure a remaining 
+Another condition to successfully implement the frame synchronization algorithm and secure a remaining 
 CFO of 2 ppm, for a SNR of 4-5dB, is to ensure to get:
 \begin{itemize}
     \item A preamble with a large enough number of symbols (N>20).
@@ -113,15 +99,10 @@ CFO of 2 ppm, for a SNR of 4-5dB, is to ensure to get:
 
 \section{Correction}
 
-\subsection{Synchronisation error correction order}
+\subsection{synchronization error correction order}
 
-The main bottleneck of the synchronisation error correction is the combination of the time shift error and
- the carrier frequency error.
-This error combination leads us to find a algorithm which correct one whithout being affected by the other.
-The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and it is robust to CFO.
-Once the time shift error is corrected, the second algorithm can be implemented and detect/estimate the frequency shift introduced by the CFO.\newline
-
-The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below.
+The main bottleneck of the synchronization error correction is the combination of the time shift error and the carrier frequency error. This error combination leads us to find a algorithm which correct one without being affected by the other. The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and it is robust to CFO. \par
+Once the time shift error is corrected, the second algorithm can be implemented and detect/estimate the frequency shift introduced by the CFO. The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below.
 
 \begin{figure}[H]
     \centering
@@ -138,8 +119,8 @@ The results of the implementation of this Gardner algorithm for different time s
 \end{figure}
 
 It is also interesting to mention that the Gardner algorithm is a \textbf{continuous} error correction - which means that
-the time shift error is corrected along the symbol stream sent.\\
-In the other hand, The frame synchronisation is a correction done by analyzing a \textbf{window} of symbols.
+the time shift error is corrected along the symbol stream sent.\par
+In the other hand, The frame synchronization is a correction done by analyzing a \textbf{window} of symbols.
 
 \subsection{CFO robustness of the Gardner algorithm}
 
@@ -166,7 +147,7 @@ the window.
 Therefore, the idea behind the usage of the differential cross correlation is to remove the dependency of the phase shit with \textbf{n}.
 This idea leads to modify the equation and multiply the correlation between $y$ and $a$ with its complex conjugate term. Indeed the exponential 
 terms are cancelling and remains an exponential dependent on k, the window division term.
-Therefore, by computing the differential cross correlation, the calculation will result to a peak once the preamble will match with the synchronisation
+Therefore, by computing the differential cross correlation, the calculation will result to a peak once the preamble will match with the synchronization
  window, function of $e^{-j\Delta wk}$ and 0 in the other cases.
  
 To reply to the sub-question quoting "Isn’t interesting to start the summation at k = 0 (no time shift)?", of course the reply is no as explained above.
@@ -182,17 +163,9 @@ The robustness of the gardner algorithm implemented in our Matlab code can be se
 
 \subsection{Optimal criteria}
 
-To summarize, to have a perfect frame synchronisation which means to have a frame time arrival standard deviation equals to 0 for a realistic CFO
+To summarize, to have a perfect frame synchronization which means to have a frame time arrival standard deviation equals to 0 for a realistic CFO
 error and a remaining time error of 2 percents at the end of Gardner module, a sine qua none condition is to get a large number of 
 samples (N>20) and a large sub-division term (K>8).
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{time_frame_arrival_error_SNR.png}
-    \caption{Frame time arrival standard deviation for realistic CFO and sampling time error based on SNR}
-    \label{fig:time_frame_arrival_error_SNR}
-\end{figure}
-\subsection{Frame and frequency acquisition}
 
 With the previous correction, the receiver knows when to sample but there still is some uncertainty on the frequency. The way to remove the CFO is to send in the data a known pilot and the first step is to detect when this pilot is received. This is known as frame acquisition and it is performed with the differential cross-correlator:
 
@@ -200,7 +173,7 @@ With the previous correction, the receiver knows when to sample but there still 
     D_k[n] = \frac{1}{N-k} \sum_{l=k}^{N-1} \left(y^*[n+l]a[l]\right) \left(y^*[n+l-k]a[l-k]\right)^*
 \end{equation*}
 
-Where $a$ is the known pilot, $N$ its length and $k$ the delay between the two correlations. \\
+Where $a$ is the known pilot, $N$ its length and $k$ the delay between the two correlations. \par
 $D_k[n]$ is computed for every time index $n$ and for every shift $k$ until its maximum value, $K$. The estimation of the index of the start of the frame $\hat{n}$ and the estimation of the CFO $\hat{\Delta f}$ are given by:
 
 \begin{equation*}
@@ -210,7 +183,7 @@ $D_k[n]$ is computed for every time index $n$ and for every shift $k$ until its 
     \hat{\Delta f} = -\frac{1}{K} \sum_{k=1}^{K} \frac{\angle D_k[\hat{n}]}{2\pi kT}, \qquad T \text{ being the symbol duration.}
 \end{equation*}
 
-The implementation of the time of arrival estimator has been done on figure \ref{fig:TOA_demo} by placing the pilot at the 100th sample and by then plotting $\sum_{k=1}^{K} |D_k[n]|$. The peak at the 100th sample clearly indicates the time of arrival of the pilot and validates the implementation. A similar test was done for the CFO estimation but it is not shown here. \\
+The implementation of the time of arrival estimator has been done on figure \ref{fig:TOA_demo} by placing the pilot at the 100th sample and by then plotting $\sum_{k=1}^{K} |D_k[n]|$. The peak at the 100th sample clearly indicates the time of arrival of the pilot and validates the implementation. A similar test was done for the CFO estimation but it is not shown here. \par
 
 \begin{figure}[H]
     \centering
@@ -219,7 +192,7 @@ The implementation of the time of arrival estimator has been done on figure \ref
     \label{fig:TOA_demo}
 \end{figure}
 
-The standard deviation of both estimators has been mesured on 250 runs for both a varying pilot length $N$ and a varying maximal shift $K$ for an increasing $\frac{E_b}{N_0}$ in figures \ref{fig:TOA_CFO_std_N} and \ref{fig:TOA_CFO_std_K}. 
+The standard deviation of both estimators has been measured on 250 runs for both a varying pilot length $N$ and a varying maximal shift $K$ for an increasing $\frac{E_b}{N_0}$ in figures \ref{fig:TOA_CFO_std_N} and \ref{fig:TOA_CFO_std_K}. 
 
 \begin{figure}[H]
     \centering
@@ -235,8 +208,8 @@ The standard deviation of both estimators has been mesured on 250 runs for both 
     \label{fig:TOA_CFO_std_K}
 \end{figure}
 
-As expected, a longer pilot and a larger shift will lower the uncertainty of the estimation and the same goes by for an increasing SNR. The fact that the line corresponding to $N = 10$ on figure \ref{fig:TOA_CFO_std_N} does not seem to decrease with $\frac{E_b}{N_0}$ is explained by the fact that $N$ and $K$ are too close to each other.\\
-The robustness of the frame acquisition is also tested against a varying CFO by measuring the standard deviation of the time of arrival estimator for a varying CFO. The results are shown in figure \ref{fig:TOA_std_CFO} and it can be seen that the CFO has no impact on the time of arrival estimator. This is because the used algorithm is a differential cross-correlator and not a classical correlator. \\
+As expected, a longer pilot and a larger shift will lower the uncertainty of the estimation and the same goes by for an increasing SNR. The fact that the line corresponding to $N = 10$ on figure \ref{fig:TOA_CFO_std_N} does not seem to decrease with $\frac{E_b}{N_0}$ is explained by the fact that $N$ and $K$ are too close to each other.\par
+The robustness of the frame acquisition is also tested against a varying CFO by measuring the standard deviation of the time of arrival estimator for a varying CFO. The results are shown in figure \ref{fig:TOA_std_CFO} and it can be seen that the CFO has no impact on the time of arrival estimator. This is because the used algorithm is a differential cross-correlator and not a classical correlator. \par
 
 \begin{figure}[H]
     \centering
@@ -245,7 +218,7 @@ The robustness of the frame acquisition is also tested against a varying CFO by 
     \label{fig:TOA_std_CFO}
 \end{figure}
 
-A similar test was done for the CFO estimator and the results are shown in figure \ref{fig:CFO_std_CFO}. The CFO estimator is as robust as it is based on the time of arrival estimator, which was robust to CFO. Its estimation starts to get further away from the real CFO only for unrealistic values of teh CFO. The standard deviation is pretty high, which means that a few pilots would be needed to average the estimation and have a value close to the real CFO. \\
+A similar test was done for the CFO estimator and the results are shown in figure \ref{fig:CFO_std_CFO}. The CFO estimator is as robust as it is based on the time of arrival estimator, which was robust to CFO. Its estimation starts to get further away from the real CFO only for unrealistic values of teh CFO. The standard deviation is pretty high, which means that a few pilots would be needed to average the estimation and have a value close to the real CFO. \par
 
 \begin{figure}[H]
     \centering
@@ -254,7 +227,7 @@ A similar test was done for the CFO estimator and the results are shown in figur
     \label{fig:CFO_std_CFO}
 \end{figure}
 
-To avoid needing a lot of pilots, the same plot was done for a higher size of the pilot and a larger shift. The results are shown in figure \ref{fig:CFO_std_CFO_N}. The standard deviation is now much lower and the estimation is still not affected by the CFO. \\
+To avoid needing a lot of pilots, the same plot was done for a higher size of the pilot and a larger shift. The results are shown in figure \ref{fig:CFO_std_CFO_N}. The standard deviation is now much lower and the estimation is still not affected by the CFO. \par
 
 \begin{figure}[H]
     \centering

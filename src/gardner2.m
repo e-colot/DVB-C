@@ -1,4 +1,4 @@
-function [output, delay] = gardner2(input, cfg, mode)
+function [output, error_time,delay] = gardner2(input, cfg, mode)
 
     delay = -1;
     % Initialisation
@@ -14,6 +14,8 @@ function [output, delay] = gardner2(input, cfg, mode)
     y_corr_down = 0;
     time_med = 0;
     time_set = 0;
+
+    correct_shift = 4;%TO BE UDPATED WHEN CHANGING TIME SHIFT.
 
 
     % Init first term
@@ -106,26 +108,55 @@ function [output, delay] = gardner2(input, cfg, mode)
         output = [output , zeros(1, cfg.NumBits*cfg.OSF/cfg.mapping_params.Nbps - length(output))];
 
        %% Time offset per symbol
-        symbol_nbre = [0:1:(cfg.NumBits/cfg.mapping_params.Nbps)-1];
+       symbol_nbre = [0:1:(cfg.NumBits/cfg.mapping_params.Nbps)-1];
        figure();
-       title('Symbol sampling visualization');
-       xlabel('Symbol');
-       ylabel('magnitude');
+       title('Gardner Algorithm visualization for PAM');
+       xlabel('Time');
+       ylabel('Matched filter output signal');
        hold on
        
+       % sumbol_range_delay = symbol_nbre + (error_time*cfg.RRC_params.fs/cfg.OSF)';
+       % plot(sumbol_range_delay(1 : 20)+1.5, sqrt(abs(mid_points(1 : 20)).^2),"*",'Color','r');
+       % hold on
+       % 
+       % plot(sumbol_range_delay(1 : 20)+1, sqrt(abs(collect_slope(1:20)).^2), '--', 'LineWidth', 0.5, 'Color', 'g');
+       % hold on
+       % 
+       % plot(sumbol_range_delay(1 : 20)+1, sqrt(abs(collect_slope(1:20)).^2), 'x', 'Color', 'g');
+       % hold on
+       % 
+       % symbol_range_test_2 = linspace(0,20,400);
+       % 
+       % plot(symbol_range_test_2, sqrt(abs(input(1:20*cfg.OSF)).^2), 'LineWidth', 0.5, 'Color', 'b');
+       % hold on
+
        sumbol_range_delay = symbol_nbre + (error_time*cfg.RRC_params.fs/cfg.OSF)';
-       plot(sumbol_range_delay(1 : 20)+1.5, sqrt(abs(mid_points(1 : 20)).^2),"*",'Color','r');
+       plot(sumbol_range_delay(1 : 19)+1.5, ((mid_points(1 : 19))),"*",'Color','r');
        hold on
     
-       plot(sumbol_range_delay(1 : 20)+1, sqrt(abs(collect_slope(1:20)).^2), '--', 'LineWidth', 0.5, 'Color', 'g');
+       plot(sumbol_range_delay(1 : 19)+1, ((collect_slope(1:19))), '--', 'LineWidth', 0.5, 'Color', 'g');
        hold on
     
-       plot(sumbol_range_delay(1 : 20)+1, sqrt(abs(collect_slope(1:20)).^2), 'x', 'Color', 'g');
+       plot(sumbol_range_delay(1 : 19)+1, ((collect_slope(1:19))), 'x', 'Color', 'g');
+       hold on
+
+       sumbol_range_true = symbol_nbre+(correct_shift/cfg.OSF);
+
+       plot(sumbol_range_true(2 : 20),(input(correct_shift+cfg.OSF:cfg.OSF:(20*cfg.OSF)+correct_shift-20)), 'o', 'Color', 'm' );
        hold on
 
        symbol_range_test_2 = linspace(0,20,400);
 
-       plot(symbol_range_test_2, sqrt(abs(input(1:20*cfg.OSF)).^2), 'LineWidth', 0.5, 'Color', 'b');
+       plot(symbol_range_test_2, ((input(1:20*cfg.OSF))), 'LineWidth', 0.5, 'Color', 'b');
        hold on
+
+       legend(...
+        'Midway sample', ...
+        'Signal slope', ...
+        'Actual symbol sampling instant', ...
+        'Correct symbol sampling instant', ...
+        'Signal input' ...
+        );
+
     end
     

@@ -81,12 +81,48 @@ As the phase offset makes the receiver sample the signal between true symbols, t
 
 \subsection{Choice of $E_{b}/N_{o}$}
 Securing a SNR high enough to ensure a remaining acceptable time error after Gardner algorithm implementation
- (2 percents of the symbol rate) is a necessary condition to fulfill.\par
-The impact on the BER can be seen on a previous graph - figure \ref{fig:BER_TS}.
-In our case, for a symbol rate of 5MHz, the SNR should be above 4dB - 5dB and will be used in our simulation.
-Moreover, this SNR allows us to achieve, once the frame synchronization implemented, a remaining carrier frequency offset
-of 2 ppm which is very close from the BER performance we can get without CFO - figure \ref{fig:CFO_BER}.
+ (2 percents of the symbole rate) is a necessary condition to fulffill.\\
+The impact on the BER can be seen on the graph below - figure \ref{fig:time_shift_error_SNR}.
+In our case, for a symbol rate of 5MHz, the SNR should be above 4dB - 5dB by referring to the simulation plots projected 
+during the course of Professor Horlin.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{time_shift_error_SNR.png}
+    \caption{Impact of time shift on bit error rate}
+    \label{fig:time_shift_error_SNR}
+\end{figure}
+
+To confirm this assumption, we run Gardner algorithm for different SNR values in order to confirm the remaining time shift after
+Gardner.  The result is plotted in the figure \ref{Time_Shift_SNR} for 2500 symbols and a bandiwth of 5MHz.
+Figure \ref{Time_Shift_evolution_SNR} shows the time shift estimation evolution for different SNR and 2500 symbols. 
+ One can notice that the remaining time shift drops below 1.5\% of the symbol rate from a SNR of 4dB which is inline with what 
+ was expected from the result shown during the course of Modulation and Coding.  For the remaining tasks, a SNR of 5dB will be 
+ used as safety margin.
+Morevover, this SNR allows us to achieve, once the frame synchronisation implemented, a remaining carrier frequency offset
+of 2 ppm which is very close from the BER performance we can get without CFO - figure \ref{fig:carrier_shift_error_SNR}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{Time_Shift_SNR.png}
+    \caption{Remaining time shift after Gardner expressed in symbol rate percentage}
+    \label{Time_Shift_SNR}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Time_Shift_evolution_SNR.png}
+    \caption{Gardner Algorithm : Time shift evolution per different SNR values}
+    \label{Time_Shift_evolution_SNR}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{carrier_shift_error_SNR.png}
+    \caption{Impact of carrier frequency offset on bit error rate}
+    \label{fig:carrier_shift_error_SNR}
+\end{figure}
 
 \subsection{Length of the pilot and the data sequence}
 
@@ -101,8 +137,14 @@ CFO of 2 ppm, for a SNR of 4-5dB, is to ensure to get:
 
 \subsection{synchronization error correction order}
 
-The main bottleneck of the synchronization error correction is the combination of the time shift error and the carrier frequency error. This error combination leads us to find a algorithm which correct one without being affected by the other. The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and it is robust to CFO. \par
-Once the time shift error is corrected, the second algorithm can be implemented and detect/estimate the frequency shift introduced by the CFO. The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below.
+The main bottleneck of the synchronisation error correction is the combination of the time shift error and
+ the carrier frequency error.
+This error combination leads us to model an algorithm which correct one whithout being affected by the other.
+The Gardner algorithm is fulfilling this condition as it is able to correct the time shift error and is also robust to CFO.
+Once the time shift error is corrected, the second algorithm can be implemented and detect/estimate the frequency shift introduced by the CFO.\newline
+
+The results of the implementation of this Gardner algorithm for different time shifts and different weight coefficients \textbf{k} are plotted below
+showing the performance of the coded algorithm inline with what was expected.
 
 \begin{figure}[H]
     \centering
@@ -122,7 +164,7 @@ It is also interesting to mention that the Gardner algorithm is a \textbf{contin
 the time shift error is corrected along the symbol stream sent.\par
 In the other hand, The frame synchronization is a correction done by analyzing a \textbf{window} of symbols.
 
-\subsection{CFO robustness of the Gardner algorithm}
+\subsection{CFO robustness of the Gardner algorithm and error interpolation}
 
 To understand why the Gardner algorithm is robust to CFO, we would need to analyze mathematically the algorithm:
 
@@ -130,8 +172,21 @@ To understand why the Gardner algorithm is robust to CFO, we would need to analy
     \epsilon_{n+1} = \epsilon_{n} - \frac{2k}{T} R[y_{\epsilon_{n}}[n-\frac{1}{2}](y_{\epsilon_{n}}^{*}[n] - y_{\epsilon_{n-1}}^{*}[n-1])]
 \end{equation*}
 
-By taking a close look to the equation, one can observe that the error is corrected by taking the difference between 2 adjacent symbols (which is why the algorithm is
-continuous). This specificity limits the effect of a phase shift as this shift will be small between two adjacent symbols.
+By taking a close look to the equation, one can observe that the error is corrected by taking the midpoint and multiplying the difference between 2 adjacent symbols (which is why the algorithm is
+continuous). This specificity limits the effect of a phase shift.  Indeed, multiplying the midpoint with the complex conjugates of 2 adjacents points results to 
+a difference of terms of opposite rotation with negligibe phase impact for realistic CFO value.  Thus, leading to Gardner algorithm being robust to CFO.\newline
+It should be mentionned that the Gardner algorithm is used with an interpolation function as the time error calculated per symbol 
+may not fall accurately to a time sample bin.  Therefore, it would be wise to oversample the symbol stream judiciously to compute an 
+accurate time error after interpolation. \\
+Figure \ref{fig:Gardner_algo_visu_PAM} shows a visualisation of the Gardner algorithm for PAM-2 modulation with midpoints, actual sampling instants,
+correct sampling instants and sampling points slope.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{Gardner_algo_visu_PAM.png}
+    \caption{Gardner algorithm for PAM-2 modulation}
+    \label{fig:Gardner_algo_visu_PAM}
+\end{figure}
+
 
 \subsection{Differential cross-correlation}
 
@@ -141,10 +196,10 @@ Let's have a closer look to the cross correlation equation to grasp the intuitio
     \sum_{l}{y^{*}_{n+l}a_{l}} = \sum_{l}{I^{*}_{n+l}a_{l}e^{-j\phi_{o}}e^{-j\Delta w(n+l)T}}
 \end{equation*}
 
-We can observe that the CFO term is increasing with \textbf{n} resulting to a cross correlation equals to 0 even if the preamble is fitting
+We can observe that the CFO term is increasing with \textbf{l+n} resulting to a cross correlation equals to 0 even if the preamble is fitting
 the window.
 
-Therefore, the idea behind the usage of the differential cross correlation is to remove the dependency of the phase shit with \textbf{n}.
+Therefore, the idea behind the usage of the differential cross correlation is to remove the dependency of the phase shit with \textbf{l+n}.
 This idea leads to modify the equation and multiply the correlation between $y$ and $a$ with its complex conjugate term. Indeed the exponential 
 terms are cancelling and remains an exponential dependent on k, the window division term.
 Therefore, by computing the differential cross correlation, the calculation will result to a peak once the preamble will match with the synchronization
